@@ -30,7 +30,7 @@ html,body{height:100%;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;col
 .tab.active{background:#C9A84C;color:#0F2044}
 
 /* ── layout shell ───────────────────────────────────────── */
-#shell{display:flex;height:calc(100vh - 56px);margin-top:56px}
+#shell{display:flex;height:calc(100vh - 56px);margin-top:56px;overflow:hidden}
 
 /* ── left sidebar ───────────────────────────────────────── */
 #lsidebar{
@@ -57,13 +57,12 @@ html,body{height:100%;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;col
 #main{
   flex:1;overflow-y:auto;padding:28px 32px;
   background:#F5F7FA;
-  display:flex;flex-direction:column;
   min-width:0          /* prevent flex blowout */
 }
 .content-panel{display:none}
 .content-panel.active{
-  display:flex;flex-direction:column;flex:1;
-  min-height:calc(100vh - 56px)  /* always fill viewport */
+  display:block;
+  min-height:calc(100vh - 96px)  /* fill viewport; 56px topbar + 40px padding */
 }
 
 .page-title{
@@ -302,7 +301,7 @@ Quarterly: $10M ÷ 4 = $2.5M per quarter</div>
 <p>Suspends the investment period if certain named individuals (key men) leave the GP. Protects LPs from investing capital with a materially changed team.</p>
 
 <div class="sub-title">7. No-Fault Divorce / Removal</div>
-<p>Allows a supermajority of LPs (typically 75%+ in interest) to remove the GP or terminate the fund. This is the LP's ultimate protective mechanism.</div>
+<p>Allows a supermajority of LPs (typically 75%+ in interest) to remove the GP or terminate the fund. This is the LP's ultimate protective mechanism.</p>
 
 <div class="sub-title">8. Side Letters</div>
 <p>Bilateral agreements between the GP and specific LPs granting preferential terms — lower fees, co-investment rights, MFN (most favored nation) clauses, enhanced reporting. As accountant, you may need to track different fee structures per LP.</p>
@@ -1426,7 +1425,7 @@ Co-Invest SPV journal entries are identical to main fund but on a smaller scale:
 - Capital account statements for each co-investor</div>
 
 <div class="section-title">NAV Facility Lending</div>
-<p>A newer financing innovation: lenders extend credit to PE funds secured by the NAV of the entire portfolio (not just LP commitments like sub-lines). Used to fund distributions, GP liquidity, or bridge capital calls. Accounting similar to sub-lines but longer duration and more complex covenants.</div>
+<p>A newer financing innovation: lenders extend credit to PE funds secured by the NAV of the entire portfolio (not just LP commitments like sub-lines). Used to fund distributions, GP liquidity, or bridge capital calls. Accounting similar to sub-lines but longer duration and more complex covenants.</p>
 </div>
 <div class="content-panel" id="panel-7-2">
 <div class="page-title">Technology &amp; Automation in PE Accounting</div>
@@ -1491,7 +1490,7 @@ Co-Invest SPV journal entries are identical to main fund but on a smaller scale:
 <p>Removed the "private adviser" exemption that previously allowed PE funds to avoid SEC registration. Required most PE GPs to register as RIAs. Also introduced LP right to know about side letters and fee reporting requirements.</p>
 
 <div class="sub-title">Form PF</div>
-<p>Large private fund advisers (>$2B AUM) file Form PF with the SEC quarterly, providing systemic risk data: fund size, leverage, concentration, liquidity. Accounting teams support Form PF data compilation.</div>
+<p>Large private fund advisers (>$2B AUM) file Form PF with the SEC quarterly, providing systemic risk data: fund size, leverage, concentration, liquidity. Accounting teams support Form PF data compilation.</p>
 
 <div class="section-title">European Regulatory Framework</div>
 
@@ -1539,8 +1538,6 @@ Co-Invest SPV journal entries are identical to main fund but on a smaller scale:
       <span class="skill-tag">Fund Administration</span>
     </div>
   </div>
-</div>
-</div>
 </div>
 <div id="rsidebar"><div id="rs-content"></div></div>
 </div>

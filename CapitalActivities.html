@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PE Fund Accounting — Intermediary Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Code+Pro:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  /* Light financial palette */
+  --bg:         #F4F5F7;
+  --surface:    #FFFFFF;
+  --card:       #FFFFFF;
+  --sidebar-bg: #0F2044;
+  --sidebar-active: #1A3360;
+  --header-bg:  #0F2044;
+
+  --navy:       #0F2044;
+  --navy-mid:   #1E3A6E;
+  --gold:       #B8860B;
+  --gold-light: #FFF8E6;
+  --gold-border:#D4A017;
+
+  --dr-color:   #1A56DB;
+  --dr-bg:      #EBF2FF;
+  --cr-color:   #0B7B4E;
+  --cr-bg:      #E6F5EE;
+
+  --text:       #1A202C;
+  --text-mid:   #374151;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+
+  --border:     #E2E8F0;
+  --border-mid: #CBD5E0;
+  --danger:     #C0392B;
+  --danger-bg:  #FDF2F2;
+  --info-color: #1E6F9F;
+  --info-bg:    #EBF6FD;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+  --shadow:     0 2px 8px rgba(0,0,0,0.10);
+  --shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --radius:     8px;
+  --radius-lg:  12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  font-size:15px;
+}
+
+/* ── HEADER ── */
+header{
+  background:var(--header-bg);
+  padding:0 28px;
+  height:62px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;flex-shrink:0;
+  box-shadow:var(--shadow);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{
+  width:36px;height:36px;
+  background:var(--gold-border);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:15px;color:#fff;font-weight:700;
+  letter-spacing:0.02em;
+}
+.logo-name{
+  font-family:'Playfair Display',serif;
+  font-size:18px;color:#fff;letter-spacing:0.01em;
+}
+.logo-sep{color:rgba(255,255,255,0.3);margin:0 6px;font-size:16px}
+.logo-sub{font-size:13px;color:rgba(255,255,255,0.55);font-weight:400}
+.stage-counter{
+  font-family:'Source Code Pro',monospace;
+  font-size:12px;
+  color:var(--gold-border);
+  background:rgba(212,160,23,0.15);
+  border:1px solid rgba(212,160,23,0.35);
+  padding:5px 14px;border-radius:20px;
+  letter-spacing:0.08em;font-weight:600;
+}
+
+/* ── LAYOUT ── */
+.app-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:228px;flex-shrink:0;
+  background:var(--sidebar-bg);
+  padding:20px 0;overflow-y:auto;
+}
+.sidebar-title{
+  font-size:11px;font-weight:700;letter-spacing:0.12em;
+  color:rgba(255,255,255,0.35);text-transform:uppercase;
+  padding:0 20px 14px;
+}
+.stage-btn{
+  width:100%;display:flex;align-items:flex-start;gap:12px;
+  padding:12px 20px;background:none;border:none;cursor:pointer;
+  text-align:left;transition:background 0.15s;
+  border-left:3px solid transparent;
+}
+.stage-btn:hover{background:rgba(255,255,255,0.06)}
+.stage-btn.active{background:var(--sidebar-active);border-left-color:var(--gold-border)}
+.stage-num{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Source Code Pro',monospace;
+  font-size:12px;color:rgba(255,255,255,0.5);
+  flex-shrink:0;margin-top:2px;
+  transition:background 0.15s,color 0.15s;
+}
+.stage-btn.active .stage-num{background:var(--gold-border);color:#fff;}
+.stage-btn.done .stage-num{background:rgba(11,123,78,0.4);color:#5DD6A3;}
+.stage-name{font-size:14.3px;font-weight:500;color:rgba(255,255,255,0.7);line-height:1.3;margin-bottom:2px}
+.stage-btn.active .stage-name{color:#fff;font-weight:600}
+.stage-tag{font-size:12.1px;color:rgba(255,255,255,0.35)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:28px;display:flex;flex-direction:column;gap:20px}
+
+/* ── RIGHT PANEL ── */
+.right-panel{
+  width:258px;flex-shrink:0;
+  border-left:1px solid var(--border);
+  padding:20px 16px;
+  background:var(--surface);
+  overflow-y:auto;
+  display:flex;flex-direction:column;gap:22px;
+  box-shadow:-2px 0 8px rgba(0,0,0,0.04);
+}
+.panel-heading{
+  font-size:10px;font-weight:700;letter-spacing:0.1em;
+  color:var(--text-muted);text-transform:uppercase;
+  margin-bottom:12px;
+  padding-bottom:6px;
+  border-bottom:2px solid var(--gold-border);
+  display:inline-block;
+}
+
+/* Balance sheet */
+.bs-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bs-row:last-child{border-bottom:none}
+.bs-label{color:var(--text-muted);font-weight:400}
+.bs-val{font-family:'Source Code Pro',monospace;font-weight:600;color:var(--text)}
+.bs-row.total-row .bs-label{color:var(--navy);font-weight:600}
+.bs-row.total-row .bs-val{color:var(--gold);font-size:15px}
+
+/* Capital Account Rollforward */
+.rollforward{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.rf-title{
+  padding:10px 14px;
+  background:var(--navy);
+  font-size:11px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:rgba(255,255,255,0.75);
+}
+.rf-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;
+  border-bottom:1px solid var(--border);
+  font-size:12px;transition:background 0.3s;
+}
+.rf-row:last-child{border-bottom:none}
+.rf-row.total{
+  background:var(--gold-light);
+  border-top:2px solid var(--gold-border);
+  border-bottom:none;
+}
+.rf-row.hl{background:#E6F5EE}
+.rf-row.hl-neg{background:#FDF2F2}
+.rf-key{color:var(--text-muted)}
+.rf-row.total .rf-key{color:var(--navy);font-weight:600;font-size:13px}
+.rf-val{font-family:'Source Code Pro',monospace;font-weight:600;color:var(--text)}
+.rf-row.total .rf-val{color:var(--gold);font-size:14px}
+
+/* ── STAGE CONTENT ── */
+.stage-chip{
+  font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--gold);
+  background:var(--gold-light);
+  border:1px solid var(--gold-border);
+  padding:4px 12px;border-radius:20px;
+  display:inline-block;margin-bottom:10px;
+}
+.stage-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.stage-title{
+  font-family:'Playfair Display',serif;
+  font-size:28px;color:var(--navy);
+  line-height:1.2;margin-bottom:8px;
+}
+.stage-desc{font-size:14px;color:var(--text-mid);line-height:1.75;max-width:520px}
+.gaap-badge{
+  background:var(--dr-bg);
+  border:1px solid rgba(26,86,219,0.2);
+  border-radius:var(--radius);
+  padding:10px 16px;
+  font-size:13px;color:var(--dr-color);
+  white-space:nowrap;flex-shrink:0;text-align:center;
+  font-weight:600;
+}
+.gaap-badge span{display:block;font-size:10px;color:var(--text-muted);margin-bottom:3px;font-weight:400}
+
+/* ── FLOW ── */
+.flow-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px 22px;
+  box-shadow:var(--shadow-sm);
+}
+.flow-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px}
+.flow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.flow-node{
+  background:var(--bg);
+  border:1.5px solid var(--border-mid);
+  border-radius:8px;padding:9px 18px;
+  font-size:13px;color:var(--text-mid);
+  text-align:center;min-width:100px;font-weight:500;
+}
+.flow-node.gold{background:var(--gold-light);border-color:var(--gold-border);color:var(--gold)}
+.flow-node.blue{background:var(--dr-bg);border-color:rgba(26,86,219,0.3);color:var(--dr-color)}
+.flow-node.green{background:var(--cr-bg);border-color:rgba(11,123,78,0.3);color:var(--cr-color)}
+.flow-node .fsub{font-size:11px;color:var(--text-muted);margin-top:3px;font-weight:400}
+.flow-arrow{color:var(--text-muted);font-size:20px;font-weight:300}
+
+/* ── JOURNAL ENTRIES ── */
+.entries-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.entries-title{
+  padding:14px 22px;
+  background:var(--navy);
+  font-size:12px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  color:rgba(255,255,255,0.8);
+  display:flex;align-items:center;gap:10px;
+}
+.step-pill{
+  background:rgba(212,160,23,0.25);
+  color:var(--gold-border);
+  font-size:10px;padding:2px 8px;border-radius:10px;
+  font-weight:600;letter-spacing:0.04em;
+}
+.entry-block{border-bottom:1px solid var(--border)}
+.entry-block:last-child{border-bottom:none}
+.entry-step-label{
+  font-size:11px;font-weight:700;
+  color:var(--navy);
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:14px 22px 0;
+  display:flex;align-items:center;gap:8px;
+}
+.entry-step-label::before{
+  content:'';width:4px;height:16px;
+  background:var(--gold-border);
+  border-radius:2px;flex-shrink:0;
+}
+table.je{width:100%;border-collapse:collapse}
+table.je th{
+  padding:9px 22px;
+  text-align:left;
+  font-size:11px;font-weight:700;
+  letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-muted);
+  background:#F8FAFC;
+  border-bottom:1px solid var(--border);
+}
+table.je td{
+  padding:11px 22px;font-size:14px;
+  border-bottom:1px solid #F1F5F9;
+  vertical-align:middle;
+}
+table.je tr:last-child td{border-bottom:none}
+table.je tbody tr:hover{background:#FAFBFD}
+.acc-name{color:var(--text);font-weight:500}
+.acc-indent{padding-left:42px;color:var(--text-mid);font-weight:400}
+.acc-type{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:3px 9px;border-radius:4px;letter-spacing:0.04em;
+}
+.acc-type.dr{background:var(--dr-bg);color:var(--dr-color)}
+.acc-type.cr{background:var(--cr-bg);color:var(--cr-color)}
+.amt{font-family:'Source Code Pro',monospace;font-size:14px;font-weight:600}
+.amt.dr{color:var(--dr-color)}
+.amt.cr{color:var(--cr-color)}
+.amt.blank{color:#D1D5DB}
+
+.entry-note{
+  margin:0 22px 14px;
+  background:var(--info-bg);
+  border:1px solid rgba(30,111,159,0.2);
+  border-left:3px solid var(--info-color);
+  border-radius:6px;padding:10px 14px;
+  font-size:13px;color:var(--info-color);line-height:1.6;
+}
+.entry-note b{font-weight:600}
+
+/* ── CALLOUT BOXES ── */
+.insight{
+  background:var(--gold-light);
+  border:1px solid var(--gold-border);
+  border-left:4px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:14px 18px;font-size:14px;
+  color:var(--text-mid);line-height:1.75;
+}
+.insight strong{color:var(--gold);font-weight:600}
+.warning-box{
+  background:var(--danger-bg);
+  border:1px solid rgba(192,57,43,0.25);
+  border-left:4px solid var(--danger);
+  border-radius:var(--radius);
+  padding:14px 18px;font-size:14px;
+  color:var(--text-mid);line-height:1.75;
+}
+.warning-box strong{color:var(--danger);font-weight:600}
+.info-box{
+  background:var(--info-bg);
+  border:1px solid rgba(30,111,159,0.25);
+  border-left:4px solid var(--info-color);
+  border-radius:var(--radius);
+  padding:14px 18px;font-size:14px;
+  color:var(--text-mid);line-height:1.75;
+}
+.info-box strong{color:var(--info-color);font-weight:600}
+
+/* ── NAV ── */
+.nav-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 28px;
+  background:var(--surface);
+  border-top:2px solid var(--border);
+  flex-shrink:0;height:60px;
+  box-shadow:0 -2px 8px rgba(0,0,0,0.06);
+}
+.nav-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 24px;border-radius:var(--radius);
+  border:1.5px solid var(--border-mid);
+  background:var(--surface);color:var(--text-mid);
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;
+}
+.nav-btn:hover{border-color:var(--navy);color:var(--navy);background:#F8FAFC}
+.nav-btn:disabled{opacity:0.35;cursor:default}
+.nav-btn:disabled:hover{border-color:var(--border-mid);color:var(--text-mid);background:var(--surface)}
+.nav-btn.primary{
+  background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600;
+}
+.nav-btn.primary:hover{background:var(--navy-mid);border-color:var(--navy-mid);color:#fff}
+.progress-dots{display:flex;gap:6px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border-mid);transition:all 0.2s;cursor:pointer;border:none;padding:0;outline:none;}
+.dot:focus-visible{outline:2px solid var(--navy);outline-offset:3px;}
+.dot.active{background:var(--navy);width:20px;border-radius:4px}
+.dot.done{background:var(--cr-color)}
+.dot:hover{background:var(--navy-mid)}
+
+.fade-in{animation:fadeIn 0.25s ease-out both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:3px}
+
+/* Divider line */
+.section-divider{height:1px;background:var(--border);margin:4px 0}
+/* Outer flex shell wrapping app-body + nav-bar */
+.layout-shell{display:flex;flex-direction:column;flex:1;overflow:hidden}
+
+/* ── SCHEDULE OF INVESTMENTS ── */
+.soi-table{width:100%;border-collapse:collapse;font-size:11px}
+.soi-table th{padding:5px 8px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);background:#F8FAFC;border-bottom:1px solid var(--border)}
+.soi-table td{padding:7px 8px;border-bottom:1px solid #F1F5F9;vertical-align:middle;font-size:11px}
+.soi-table tr:last-child td{border-bottom:none}
+.soi-table tbody tr:hover{background:#FAFBFD}
+.soi-name{font-weight:500;color:var(--text)}
+.soi-num{font-family:'Source Code Pro',monospace;font-weight:600}
+.soi-pos{color:var(--cr-color)}.soi-neg{color:var(--danger)}.soi-zero{color:var(--text-muted)}
+.badge-active{display:inline-block;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--cr-bg);color:var(--cr-color)}
+.badge-exited{display:inline-block;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:#F3F4F6;color:var(--text-muted)}
+.badge-none{display:inline-block;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:#F3F4F6;color:var(--text-muted)}
+.panel-note{font-size:11px;color:var(--text-muted);line-height:1.6;padding:8px;background:#F8FAFC;border:1px solid var(--border);border-radius:6px}
+.panel-empty{font-size:11px;color:var(--text-muted);font-style:italic;padding:6px 0}
+
+/* ── P&L PANEL ── */
+.pl-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #F1F5F9;font-size:12px}
+.pl-row:last-child{border-bottom:none}
+.pl-label{color:var(--text-mid);font-size:11px}
+.pl-val{font-family:'Source Code Pro',monospace;font-weight:600;font-size:11px}
+.pl-total-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:2px solid var(--navy);margin-top:2px;font-size:12px}
+.pl-total-label{color:var(--navy);font-weight:600}
+.pl-total-val{font-family:'Source Code Pro',monospace;font-weight:700;font-size:12px}
+.pl-pos{color:var(--cr-color)}.pl-neg{color:var(--danger)}.pl-zero{color:var(--text-muted)}
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px){
+  .sidebar{width:180px}
+  .right-panel{width:210px}
+  .stage-title{font-size:20px}
+  .main{padding:18px}
+}
+@media (max-width:700px){
+  .sidebar{display:none}
+  .right-panel{display:none}
+  .app-body{flex-direction:column}
+  .main{padding:16px}
+  .stage-title{font-size:18px}
+  .logo-sub{display:none}
+  /* Show a compact stage indicator on mobile instead of sidebar */
+  header::after{
+    content:attr(data-stage);
+    font-size:11px;
+    color:rgba(255,255,255,0.5);
+    display:block;
+  }
+}
+@media (max-width:480px){
+  header{padding:0 14px;height:52px}
+  .logo-name{font-size:14px}
+  .stage-counter{font-size:10px;padding:4px 10px}
+  .nav-btn{padding:8px 14px;font-size:12px}
+  table.je th,table.je td{padding:7px 10px;font-size:11px}
+  .entries-title{padding:10px 14px;font-size:10px}
+  .entry-step-label{padding:10px 14px 0;font-size:10px}
+  .insight,.warning-box,.info-box{padding:10px 12px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">PE</div>
+    <div>
+      <span class="logo-name">Sample Fund</span>
+      <span class="logo-sep">|</span>
+      <span class="logo-sub">Intermediary / Fund Administrator Books</span>
+    </div>
+  </div>
+  <span class="stage-counter" id="stageCounter">STAGE 1 OF 7</span>
+</header>
+
+<div class="layout-shell">
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" role="navigation" aria-label="Fund lifecycle stages">
+    <div class="sidebar-title">Fund Lifecycle</div>
+    <button class="stage-btn active" onclick="goTo(0)" id="sb0" aria-label="Stage 1: Capital Call"><div class="stage-num">1</div><div><div class="stage-name">Capital Call</div><div class="stage-tag">LP funding</div></div></button>
+    <button class="stage-btn" onclick="goTo(1)" id="sb1" aria-label="Stage 2: Investment Purchase"><div class="stage-num">2</div><div><div class="stage-name">Investment Purchase</div><div class="stage-tag">Deploy capital</div></div></button>
+    <button class="stage-btn" onclick="goTo(2)" id="sb2" aria-label="Stage 3: Unrealized Appreciation"><div class="stage-num">3</div><div><div class="stage-name">Unrealized Appreciation</div><div class="stage-tag">Fair value mark-up</div></div></button>
+    <button class="stage-btn" onclick="goTo(3)" id="sb3" aria-label="Stage 4: Unrealized Depreciation"><div class="stage-num">4</div><div><div class="stage-name">Unrealized Depreciation</div><div class="stage-tag">Fair value mark-down</div></div></button>
+    <button class="stage-btn" onclick="goTo(4)" id="sb4" aria-label="Stage 5: Realization and Exit"><div class="stage-num">5</div><div><div class="stage-name">Realization / Exit</div><div class="stage-tag">Portfolio company sold</div></div></button>
+    <button class="stage-btn" onclick="goTo(5)" id="sb5" aria-label="Stage 6: Distribution"><div class="stage-num">6</div><div><div class="stage-name">Distribution</div><div class="stage-tag">Cash to investors</div></div></button>
+    <button class="stage-btn" onclick="goTo(6)" id="sb6" aria-label="Stage 7: K-1 Tax Classification"><div class="stage-num">7</div><div><div class="stage-name">K-1 Classification</div><div class="stage-tag">Tax reporting</div></div></button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent" role="main" aria-live="polite" aria-label="Stage content"></main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+
+    <div>
+      <div class="panel-heading">Balance Sheet</div>
+      <div class="bs-row"><span class="bs-label">Cash / Bank</span><span class="bs-val" id="bs-cash">$0</span></div>
+      <div class="bs-row"><span class="bs-label">Investment (Fair Value)</span><span class="bs-val" id="bs-inv">$0</span></div>
+      <div class="section-divider"></div>
+      <div class="bs-row total-row"><span class="bs-label">Partners' Capital (NAV)</span><span class="bs-val" id="bs-pc">$0</span></div>
+    </div>
+
+    <div>
+      <div class="panel-heading">Income Statement (P&amp;L)</div>
+      <div id="plPanel"></div>
+    </div>
+
+    <div>
+      <div class="panel-heading">Capital Account Rollforward</div>
+      <div class="rollforward">
+        <div class="rf-title">LP Capital — Cumulative</div>
+        <div class="rf-row" id="rf-beg"><span class="rf-key">Beginning capital</span><span class="rf-val" id="rv-beg">—</span></div>
+        <div class="rf-row" id="rf-contrib"><span class="rf-key">+ Capital contributions</span><span class="rf-val" id="rv-contrib">—</span></div>
+        <div class="rf-row" id="rf-realized"><span class="rf-key">+ Cumulative realized gains</span><span class="rf-val" id="rv-realized">—</span></div>
+        <div class="rf-row" id="rf-unrealized"><span class="rf-key">+/− Cumulative unrealized</span><span class="rf-val" id="rv-unrealized">—</span></div>
+        <div class="rf-row" id="rf-distrib"><span class="rf-key">− Distributions (excl. ROC)</span><span class="rf-val" id="rv-distrib">—</span></div>
+        <div class="rf-row" id="rf-roc"><span class="rf-key">− Return of capital (ROC)</span><span class="rf-val" id="rv-roc">—</span></div>
+        <div class="rf-row total"><span class="rf-key">Ending capital (NAV)</span><span class="rf-val" id="rv-end">—</span></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.6">
+        🟢 Green — value increased this stage &nbsp;|&nbsp; 🔴 Red — value decreased
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-heading">Schedule of Investments</div>
+      <div id="soiPanel"></div>
+    </div>
+
+    <div>
+      <div class="panel-heading">Accounting Standard</div>
+      <div style="font-size:13px;color:var(--text-mid);line-height:1.75;">
+        <span style="color:var(--dr-color);font-weight:600">ASC 946</span> — Financial Services: Investment Companies.<br><br>
+        Under ASC 946, all investments are carried at <em>fair value</em>. Changes in FV flow through the <strong>income statement</strong> — not OCI — and are allocated to partners' capital.
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-heading">Model Notes</div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.6">
+        Distributions and ROC are shown as separate rows to illustrate the classification difference. In many fund reports, ROC is a component within the distributions line. This model excludes management fees and fund expenses for clarity — a clean-case illustration only.
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- NAV BAR -->
+<nav class="nav-bar" aria-label="Stage navigation">
+  <button class="nav-btn" id="prevBtn" onclick="prevStage()" aria-label="Previous stage">← Previous</button>
+  <div class="progress-dots" id="progressDots" role="tablist" aria-label="Stage progress"></div>
+  <button class="nav-btn primary" id="nextBtn" onclick="nextStage()" aria-label="Next stage">Next Stage →</button>
+</nav>
+</div>
+
+<script>
+const M=1e6;
+// fmt: signed formatter for assets, gains, and capital balances
+const fmt=n=>{
+  if(n===0)return '$0.0M';
+  const a=Math.abs(n/M);
+  return (n<0?'−':'')+'$'+a.toFixed(1)+'M';
+};
+// fmtAbs: always positive — used when sign is already conveyed by parentheses or row label
+const fmtAbs=n=>'$'+(Math.abs(n)/M).toFixed(1)+'M';
+
+const bsStates=[
+  [10*M,0,10*M],[2*M,8*M,10*M],[2*M,11*M,13*M],
+  [2*M,10*M,12*M],[14*M,0,14*M],[0,0,0],[0,0,0]
+];
+const rfStates=[
+  {contrib:10*M,realized:0,   unrealized:0,  distrib:0,   roc:0,    end:10*M},
+  {contrib:10*M,realized:0,   unrealized:0,  distrib:0,   roc:0,    end:10*M},
+  {contrib:10*M,realized:0,   unrealized:3*M,distrib:0,   roc:0,    end:13*M},
+  {contrib:10*M,realized:0,   unrealized:2*M,distrib:0,   roc:0,    end:12*M},
+  {contrib:10*M,realized:4*M, unrealized:0,  distrib:0,   roc:0,    end:14*M},
+  {contrib:10*M,realized:4*M, unrealized:0,  distrib:4*M, roc:10*M, end:0},
+  {contrib:10*M,realized:4*M, unrealized:0,  distrib:4*M, roc:10*M, end:0},
+];
+const rfChanged=[
+  ['rf-contrib'],[],['rf-unrealized'],['rf-unrealized'],
+  ['rf-realized','rf-unrealized'],['rf-distrib','rf-roc'],[]
+];
+
+// ── SCHEDULE OF INVESTMENTS ──
+// inv: [{name, cost, fv, unrealized, status, proceeds}]
+// status: 'active' | 'exited' | null
+const soiData=[
+  {inv:[],                        note:'No investments yet. Capital called but not yet deployed.'},
+  {inv:[{name:'Alpha AI Inc.',cost:8*M,fv:8*M,unreal:0,status:'active'}], note:null},
+  {inv:[{name:'Alpha AI Inc.',cost:8*M,fv:11*M,unreal:3*M,status:'active'}], note:null},
+  {inv:[{name:'Alpha AI Inc.',cost:8*M,fv:10*M,unreal:2*M,status:'active'}], note:'Net unrealized = +$3.0M (Stage 3) − $1.0M (Stage 4) = +$2.0M.'},
+  {inv:[{name:'Alpha AI Inc.',cost:8*M,fv:null,unreal:null,status:'exited',proceeds:12*M}], note:'Exited at $12.0M. Total realized gain = $4.0M ($12.0M − $8.0M cost).'},
+  {inv:[],                        note:'Portfolio fully exited. Full $14.0M distributed to investors — fund wound down.'},
+  {inv:[],                        note:'Portfolio fully exited. K-1 classification complete. Fund NAV = $0.'},
+];
+
+// ── INCOME STATEMENT (P&L) ──
+// items: [{label, amount}]  amount > 0 = income, < 0 = loss
+const plData=[
+  {items:[],netIncome:0,     note:'Capital calls are equity movements. No income statement impact.'},
+  {items:[],netIncome:0,     note:'Investment purchases are balance sheet events. No income statement impact.'},
+  {items:[{label:'Unrealized Gain/Loss on Investments',amt:3*M}],
+   netIncome:3*M, note:null},
+  {items:[{label:'Unrealized Gain/Loss on Investments',amt:-1*M}],
+   netIncome:-1*M, note:null},
+  {items:[
+    {label:'Realized Gain on Investments (new — Step A)',amt:2*M},
+  ],netIncome:2*M, note:'Step B reverses Partners\' Capital (equity) for the $2.0M previously allocated as unrealized — it is an equity reclassification, not new income. Total new income recognized at exit = $2.0M (Step A only). The full $4.0M allocated in Step C includes the $2.0M reclassified from prior periods.'},
+  {items:[],netIncome:0, note:'Distributions are equity movements — they reduce Partners\' Capital but do not affect the income statement. No income or loss is recognized when cash is distributed to investors.'},
+  {items:[],netIncome:0, note:'K-1 classification is a tax and capital account reporting step only. No journal entries, no cash movement, no income statement impact in Stage 7.'},
+];
+
+const stages=[
+  {chip:'Stage 1 — Capital Call',title:'Capital Call',
+   desc:'The fund issues a capital call, requiring Limited Partners (LPs) to wire a portion of their committed capital. The intermediary records a receivable when the call is issued, then clears it when cash arrives at the fund.',
+   gaap:'ASC 946-205',gaapNote:"Partners' Capital",
+   flow:[{l:'LP Investors',s:'Committed $10M',t:'blue'},{a:1},{l:'Capital Call Issued',s:'$10M called',t:'gold'},{a:1},{l:'Cash Received',s:'Wire to fund account',t:'green'}],
+   entries:[
+     {step:'Step A — Capital call issued (receivable recorded)',note:null,rows:[
+       {acc:'Due from Limited Partners',i:0,side:'dr',dr:'$10,000,000',cr:'—'},
+       {acc:"Partners' Capital — Capital Contributions",i:1,side:'cr',dr:'—',cr:'$10,000,000'},
+     ]},
+     {step:'Step B — Cash received from LP',
+      note:"Some funds skip Step A and book cash directly upon receipt, depending on timing, materiality, and fund policy. If your firm follows this practice, document it in your accounting procedures manual.",
+      rows:[
+       {acc:'Cash / Bank',i:0,side:'dr',dr:'$10,000,000',cr:'—'},
+       {acc:'Due from Limited Partners',i:1,side:'cr',dr:'—',cr:'$10,000,000'},
+     ]},
+   ],
+   insight:"<strong>Key concept:</strong> Partners' Capital — Capital Contributions is an <em>equity account</em>, not revenue. It represents the LP's funded commitment to the fund. <em>Due from Limited Partners</em> is the standard receivable account used by most fund administrators. The two-step approach keeps NAV accurate between call date and wire date.",
+   warning:null,info:null},
+
+  {chip:'Stage 2 — Investment Purchase',title:'Investment Purchase',
+   desc:'The fund deploys $8M of called capital by acquiring a portfolio company — Alpha AI Inc. Cash leaves the fund and an investment asset is recorded on the balance sheet at cost.',
+   gaap:'ASC 946-320',gaapNote:'Investment at cost',
+   flow:[{l:'Fund Cash',s:'$10M available',t:'blue'},{a:1},{l:'Acquire Alpha AI Inc.',s:'$8M purchase price',t:'gold'},{a:1},{l:'Investment Asset',s:'Recorded at cost',t:'green'}],
+   entries:[
+     {step:'Step A — Purchase of portfolio investment',note:null,rows:[
+       {acc:'Investment at Cost — Alpha AI Inc.',i:0,side:'dr',dr:'$8,000,000',cr:'—'},
+       {acc:'Cash / Bank',i:1,side:'cr',dr:'—',cr:'$8,000,000'},
+     ]},
+   ],
+   insight:"<strong>Key concept:</strong> The investment is recorded at cost at acquisition — no gain or loss yet. <strong>Note for new fund accountants:</strong> <em>Investment at Cost</em> and <em>Investment at Fair Value</em> are not two different accounts — they are the same account, renamed upon the first fair value adjustment in Stage 3. Before any fair value mark, the account carries cost. Once ASC 946 fair value accounting is applied, the account reflects current fair value and the label updates accordingly. Remaining cash ($2.0M) covers management fees, fund expenses, and follow-on reserves.",
+   warning:null,info:null},
+
+  {chip:'Stage 3 — Unrealized Appreciation',title:'Unrealized Appreciation',
+   desc:'Year-end valuation: Alpha AI Inc. is independently valued at $11M — up $3M from cost. Under ASC 946, all fair value changes flow through the income statement (not OCI as in corporate GAAP), and are then allocated to partners\' capital.',
+   gaap:'ASC 946-320-35',gaapNote:'Fair value — required',
+   flow:[{l:'Alpha AI FV $11M',s:'Cost was $8M',t:'green'},{a:1},{l:'Unrealized Gain +$3M',s:'Flows through P&L',t:'gold'},{a:1},{l:"Partners' Capital",s:'Allocated per LPA',t:'blue'}],
+   entries:[
+     {step:'Step A — Mark investment up to fair value',note:null,rows:[
+       {acc:'Investment at Fair Value — Alpha AI Inc.',i:0,side:'dr',dr:'$3,000,000',cr:'—'},
+       {acc:'Net Unrealized Appreciation on Investments',i:1,side:'cr',dr:'—',cr:'$3,000,000'},
+     ]},
+     {step:"Step B — Allocate gain to partners' capital (per LPA)",
+      note:"Step B is often system-driven in fund accounting platforms (Geneva, Investran, Allvue). The allocation engine calculates each partner's share per the waterfall and posts it automatically. Manual journal entries are used only for adjustments or corrections. <strong>Real-world complexity:</strong> allocation is typically across multiple LPs, the GP, and sometimes separate carry vehicles — each with different ownership percentages and waterfall tiers. This dashboard shows a single '[LP Name]' for illustration only; a production fund with 20 LPs would generate 20+ allocation lines per period.",
+      rows:[
+       {acc:'Net Unrealized Appreciation on Investments',i:0,side:'dr',dr:'$3,000,000',cr:'—'},
+       {acc:"Partners' Capital — [LP Name]",i:1,side:'cr',dr:'—',cr:'$3,000,000'},
+     ]},
+   ],
+   insight:"<strong>ASC 946 vs. corporate GAAP:</strong> Under standard corporate accounting, changes in fair value of investments often go to Other Comprehensive Income (OCI) — bypassing the income statement. Under ASC 946 (investment company accounting), <em>all</em> fair value changes flow through the income statement and are allocated directly into partners' capital. This is a fundamental distinction fund accountants must understand. <strong>Account naming note:</strong> This dashboard uses separate <em>Net Unrealized Appreciation</em> and <em>Net Unrealized Depreciation</em> accounts for clarity. In practice, many large fund admin systems (Geneva, Investran, Allvue) use a single account — <em>Net Change in Unrealized Gain/(Loss) on Investments</em> — which avoids dual-account tracking and simplifies the rollforward. Both approaches are acceptable; confirm with your fund's chart of accounts.",
+   warning:null,info:null},
+
+  {chip:'Stage 4 — Unrealized Depreciation',title:'Unrealized Depreciation',
+   desc:'In the next reporting period, market conditions deteriorate. Alpha AI Inc. is now valued at $10M — down $1M from the prior fair value of $11M. The same account family is used consistently across appreciation and depreciation.',
+   gaap:'ASC 946-320-35',gaapNote:'Fair value — mark-down',
+   flow:[{l:'Alpha AI FV $10M',s:'Was $11M prior period',t:'blue'},{a:1},{l:'Unrealized Loss −$1M',s:'Flows through P&L',t:'gold'},{a:1},{l:"Partners' Capital",s:'Reduced per LPA',t:'blue'}],
+   entries:[
+     {step:'Step A — Mark investment down to fair value',note:null,rows:[
+       {acc:'Net Unrealized Depreciation on Investments',i:0,side:'dr',dr:'$1,000,000',cr:'—'},
+       {acc:'Investment at Fair Value — Alpha AI Inc.',i:1,side:'cr',dr:'—',cr:'$1,000,000'},
+     ]},
+     {step:"Step B — Allocate loss to partners' capital (per LPA)",
+      note:"The allocation follows the same system-driven process as appreciation, applied in reverse. Net unrealized position across Stages 3 & 4: +$3M − $1M = +$2M. The investment now carries at $10M fair value on the books — which is critical for the exit calculation in Stage 5.",
+      rows:[
+       {acc:"Partners' Capital — [LP Name]",i:0,side:'dr',dr:'$1,000,000',cr:'—'},
+       {acc:'Net Unrealized Depreciation on Investments',i:1,side:'cr',dr:'—',cr:'$1,000,000'},
+     ]},
+   ],
+   insight:"<strong>Account naming consistency:</strong> This dashboard uses two separate accounts throughout: <em>Net Unrealized Appreciation on Investments</em> for mark-ups and <em>Net Unrealized Depreciation on Investments</em> for mark-downs. Maintain one naming convention for the entire fund life — account names must not change mid-fund. The investment account is always <em>Investment at Fair Value — Alpha AI Inc.</em> from Stage 3 through exit.",
+   warning:null,info:null},
+
+  {chip:'Stage 5 — Realization & Exit',title:'Realization & Exit',
+   desc:'Alpha AI Inc. is sold for $12M cash. Total economic gain = $4M ($12M exit − $8M cost). This gain comprises two components: $2M previously recognized as unrealized (Stages 3 & 4), and $2M incremental gain recognized at exit. The LPA waterfall allocates all $4M to partners.',
+   gaap:'ASC 946-225',gaapNote:'Realized gain recognition',
+   flow:[{l:'Buyer pays $12M',s:'Exit proceeds',t:'blue'},{a:1},{l:'Remove Inv. at $10M FV',s:'Cost was $8M',t:'gold'},{a:1},{l:'Total Gain Realized $4M',s:'Allocated per waterfall',t:'green'}],
+   entries:[
+     {step:'Step A — Record exit proceeds, remove investment at carrying value',note:null,rows:[
+       {acc:'Cash / Bank',i:0,side:'dr',dr:'$12,000,000',cr:'—'},
+       {acc:'Investment at Fair Value — Alpha AI Inc.',i:1,side:'cr',dr:'—',cr:'$10,000,000'},
+       {acc:'Realized Gain on Investments',i:1,side:'cr',dr:'—',cr:'$2,000,000'},
+     ]},
+     {step:'Step B — Reclassify previously recognized unrealized gain (no new income impact)',
+      note:"This entry reclassifies the $2.0M net unrealized gain from Stages 3 & 4 into the realized category. It does NOT create new income — the gain was already recognized in prior periods. The debit to Partners' Capital reverses the $2.0M net unrealized gain previously allocated to partners ($3M appreciation in Stage 3 minus $1M depreciation in Stage 4). The credit to 'Unrealized Gain Reclassification to Realized' uses a distinct account name to prevent audit confusion with the new $2.0M gain in Step A. After Steps A and B, the two accounts combined total $4.0M, which is allocated in Step C. <strong>Presentation may vary by fund administrator:</strong> some production GLs collapse Steps A and B into a single $4.0M net realized gain entry, with the unrealized reclassification handled implicitly by the system rather than as a visible journal entry.",
+      rows:[
+       {acc:"Partners' Capital — [LP Name]",i:0,side:'dr',dr:'$2,000,000',cr:'—'},
+       {acc:'Unrealized Gain Reclassification to Realized',i:1,side:'cr',dr:'—',cr:'$2,000,000'},
+     ]},
+     {step:"Step C — Aggregate and allocate total realized gain per LPA waterfall",
+      note:"Step C combines: $2.0M new realized gain (Step A) + $2.0M reclassified from unrealized (Step B) = $4.0M total. Waterfall order: (1) Return LP contributed capital → (2) Preferred return to LPs → (3) GP catch-up → (4) Carry split. Example below uses a standard 80/20 carried interest split.",
+      rows:[
+       {acc:'Realized Gain on Investments',i:0,side:'dr',dr:'$2,000,000',cr:'—'},
+       {acc:'Unrealized Gain Reclassification to Realized',i:0,side:'dr',dr:'$2,000,000',cr:'—'},
+       {acc:"Partners' Capital — LP Accounts (80%)",i:1,side:'cr',dr:'—',cr:'$3,200,000'},
+       {acc:"Partners' Capital — GP / Carried Interest (20%)",i:1,side:'cr',dr:'—',cr:'$800,000'},
+     ]},
+   ],
+   insight:"<strong>Total gain breakdown:</strong> Cost = $8.0M. Exit = $12.0M. Total gain = $4.0M. Of that: $2.0M was previously recognized as unrealized (net of Stages 3 &amp; 4). The remaining $2.0M is the incremental gain recognized at exit. <strong>The $4.0M realized gain includes the prior $2.0M unrealized gain, reclassified via Step B — it is not additional gain.</strong> Step B makes this split auditable and transparent. Step C allocates the full $4.0M per the LPA waterfall.",
+   warning:"<strong>Never describe the balancing credit as a 'plug.'</strong> The realized gain is the precise mathematical difference between exit proceeds and the investment's carrying value — a defined, auditable number. Using the word 'plug' signals to auditors and senior reviewers that the entry is not properly understood.",
+   info:null},
+
+  {chip:'Stage 6 — Distribution',title:'Distribution to Investors',
+   desc:'The fund distributes the full $14M of available cash to investors — the $12M exit proceeds plus the $2M cash reserve held since Stage 1. Under a European-style waterfall (standard in large institutional buyout funds), capital is returned in strict order: (1) return 100% of contributed capital first, then (2) distribute gains. Since the LP contributed $10M, the first $10M distributed is classified as Return of Capital (ROC). The remaining $4M is distributed as realized gains, split 80% to the LP and 20% to the GP as carried interest. The fund is fully wound down — ending NAV = $0.',
+   gaap:'ASC 946-205-45',gaapNote:"Partners' Capital reduction",
+   flow:[{l:'Fund Cash $14M',s:'$12M exit + $2M reserve',t:'blue'},{a:1},{l:'Full Distribution',s:'Board approved — $14M',t:'gold'},{a:1},{l:'Fund NAV = $0',s:'Fully wound down',t:'green'}],
+   entries:[
+     {step:'Step A — Full distribution declared (board approval / investor notice sent)',
+      note:"The entire $14M is declared in one board resolution. The fund does not send separate wires for ROC vs. gains — it sends one distribution. The ROC vs. gain classification is tracked in the capital account sub-ledger and reported on the K-1, not as separate cash events.",
+      rows:[
+       {acc:"Partners' Capital",i:0,side:'dr',dr:'$14,000,000',cr:'—'},
+       {acc:'Distributions Payable',i:1,side:'cr',dr:'—',cr:'$14,000,000'},
+     ]},
+     {step:'Step B — Cash wired to investors',
+      note:"One wire per investor per the wiring instructions on file. The wire amount is the full distribution — not split by component. The LP receives $13.2M ($10M ROC + $3.2M gain share). The GP receives $0.8M carried interest. Total wired = $14M.",
+      rows:[
+       {acc:'Distributions Payable',i:0,side:'dr',dr:'$14,000,000',cr:'—'},
+       {acc:'Cash / Bank',i:1,side:'cr',dr:'—',cr:'$14,000,000'},
+     ]},
+     {step:'Step C — Capital account sub-ledger: waterfall classification',
+      note:"Step C is not a new GL journal entry — it is the allocation recorded within the Partners' Capital sub-ledger. It breaks the $14M distribution into its waterfall components for capital account statements and K-1 reporting. The GL sees one $14M debit to Partners' Capital (Step A). The sub-ledger shows how that $14M is sourced.",
+      rows:[
+       {acc:"Partners' Capital — Return of Contributed Capital (ROC)",i:0,side:'dr',dr:'$10,000,000',cr:'—'},
+       {acc:"Partners' Capital — Realized Gains — LP Share (80%)",i:0,side:'dr',dr:'$3,200,000',cr:'—'},
+       {acc:"Partners' Capital — Carried Interest — GP (20%)",i:0,side:'dr',dr:'$800,000',cr:'—'},
+       {acc:'Distributions Payable',i:1,side:'cr',dr:'—',cr:'$14,000,000'},
+     ]},
+   ],
+   insight:"<strong>Why $10M is ROC and not $8M:</strong> ROC equals the LP's total <em>contributed capital</em> — every dollar they wired into the fund ($10M), not just what was deployed into the investment ($8M). The $2M cash reserve was still the LP's money, held at the fund level. Under the European waterfall, 100% of contributed capital must be returned before any gains are distributed. <strong>Waterfall order (European-style):</strong> (1) Return 100% of LP contributed capital → (2) Preferred return to LPs (hurdle rate, typically 8%) → (3) GP catch-up → (4) Carried interest split. This model simplifies by omitting the preferred return and catch-up for clarity.",
+   warning:"<strong>ROC is not a separate wire.</strong> Funds do not send one wire labeled 'ROC' and another labeled 'gains.' They send one distribution. ROC is a <em>classification</em> of how the distribution is sourced — tracked in the capital account sub-ledger and reported on the K-1. Booking ROC as a separate cash event is incorrect and will create a NAV discrepancy.",
+   info:"<strong>European vs. American waterfall:</strong> In a <em>European waterfall</em> (fund-as-a-whole), ALL contributed capital across the entire fund is returned before any carried interest is paid. In an <em>American waterfall</em> (deal-by-deal), carried interest can be paid after each individual deal exits — as long as that deal clears the hurdle rate — subject to a clawback if later deals underperform. This model uses European-style, which is the standard in large institutional buyout funds. American deal-by-deal waterfalls are more common in US venture capital and many middle-market PE funds."},
+
+  {chip:'Stage 7 — K-1 Classification',title:'K-1 Tax Classification',
+   desc:'Stage 7 has no new cash movement and no new journal entries. The $14M distribution was fully paid in Stage 6. Stage 7 represents the tax classification step — determining how each dollar of the distribution is reported on the LP\'s Schedule K-1. This classification affects the LP\'s tax return, cost basis, and future gain calculations. It does not change the fund\'s books.',
+   gaap:'ASC 946-205-45',gaapNote:'Capital account reporting',
+   flow:[{l:'Distribution $14M',s:'Paid in Stage 6',t:'blue'},{a:1},{l:'K-1 Classification',s:'No new cash',t:'gold'},{a:1},{l:'LP Tax Return',s:'3 components reported',t:'green'}],
+   entries:[
+     {step:'K-1 reporting — three components of the $14M distribution',
+      note:"This is a memo/reporting entry only — not a GL posting. The fund administrator produces the K-1 from the capital account sub-ledger populated in Stage 6 Step C. Each component is reported in a different K-1 box and has different tax treatment for the LP.",
+      rows:[
+       {acc:'ROC — Return of Contributed Capital',i:0,side:'dr',dr:'$10,000,000',cr:'—'},
+       {acc:'Realized Gain — LP Share (80% of $4M gain)',i:0,side:'dr',dr:'$3,200,000',cr:'—'},
+       {acc:'Carried Interest — GP (20% of $4M gain)',i:0,side:'dr',dr:'$800,000',cr:'—'},
+       {acc:'Total Distribution per K-1',i:1,side:'cr',dr:'—',cr:'$14,000,000'},
+     ]},
+   ],
+   insight:"<strong>How each K-1 component is taxed:</strong> (1) <strong>ROC $10M</strong> — not taxable when received. It permanently reduces the LP's cost basis from $10M to $0. Once basis reaches zero, any future distributions become fully taxable gains. (2) <strong>Realized Gain $3.2M</strong> — taxable to the LP as long-term capital gain (assuming the investment was held over 12 months). (3) <strong>Carried Interest $0.8M</strong> — taxable to the GP, typically as long-term capital gain under current tax law (subject to the 3-year holding period rule under IRC §1061). The LP's after-tax economics depend entirely on correct K-1 classification.",
+   warning:"<strong>Most common mistake:</strong> Classifying ROC as a capital gain distribution on the K-1. This forces the LP to recognize taxable income they did not actually earn — overstating their tax liability and understating their remaining cost basis. K-1 amendments are legally complex and expensive. Correct classification at the source is critical.",
+   info:"<strong>Cost basis tracking matters at fund wind-down:</strong> After receiving $10M ROC, this LP's cost basis is $0. If the fund had made a second investment that later distributed proceeds, every dollar of that distribution would be fully taxable — there is no remaining basis to offset it. Fund administrators must maintain accurate cost basis records throughout the fund life, not just at exit."},
+];
+
+let current=0;
+
+function updateRF(idx){
+  const r=rfStates[idx];
+  // rfStates stores cumulative-from-inception totals; beginning capital is always $0 (fund start).
+  // Using prior-period end as "beg" would double-count contributions already in the cumulative rows.
+  const end=r.end;
+  document.getElementById('rv-beg').textContent       = '$0.0M';
+  document.getElementById('rv-contrib').textContent   = r.contrib?fmt(r.contrib):'—';
+  document.getElementById('rv-realized').textContent  = r.realized?fmt(r.realized):'—';
+  // Show '$0.0M' when unrealized drops from a prior non-zero value (Stage 5 reclassification).
+  const prevUnrealized=idx>0?rfStates[idx-1].unrealized:0;
+  document.getElementById('rv-unrealized').textContent= r.unrealized?fmt(r.unrealized):(prevUnrealized?'$0.0M':'—');
+  document.getElementById('rv-distrib').textContent   = r.distrib?'('+fmtAbs(r.distrib)+')':'—';
+  document.getElementById('rv-roc').textContent       = r.roc?'('+fmtAbs(r.roc)+')':'—';
+  document.getElementById('rv-end').textContent       = fmt(end);
+  ['rf-beg','rf-contrib','rf-realized','rf-unrealized','rf-distrib','rf-roc'].forEach(id=>{
+    document.getElementById(id).classList.remove('hl','hl-neg');
+  });
+  rfChanged[idx].forEach(id=>{
+    const neg=id==='rf-distrib'||id==='rf-roc';
+    document.getElementById(id).classList.add(neg?'hl-neg':'hl');
+  });
+}
+
+function updateSOI(idx){
+  const d=soiData[idx];
+  const el=document.getElementById('soiPanel');
+  if(d.inv.length===0){
+    el.innerHTML=`<div class="panel-empty">No active investments.</div>${d.note?`<div class="panel-note" style="margin-top:6px">${d.note}</div>`:''}`;
+    return;
+  }
+  const rows=d.inv.map(inv=>{
+    const isExited=inv.status==='exited';
+    const fvCell=isExited?`<span class="soi-zero">Exited</span>`:inv.fv!=null?`<span class="soi-num">${fmt(inv.fv)}</span>`:'—';
+    const unrealCell=inv.unreal!=null
+      ?`<span class="soi-num ${inv.unreal>0?'soi-pos':inv.unreal<0?'soi-neg':'soi-zero'}">${inv.unreal>0?'+':''}${fmt(inv.unreal)}</span>`
+      :(isExited?`<span class="soi-pos">+${fmt(4*M)} realized</span>`:'—');
+    const badge=isExited?`<span class="badge-exited">Exited</span>`:`<span class="badge-active">Active</span>`;
+    return `<tr>
+      <td colspan="2" class="soi-name">${inv.name} ${badge}</td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-muted);font-size:10px">Cost</td>
+      <td class="soi-num" style="text-align:right">${fmt(inv.cost)}</td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-muted);font-size:10px">Fair Value</td>
+      <td style="text-align:right">${fvCell}</td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-muted);font-size:10px">Unrealized G/L</td>
+      <td style="text-align:right">${unrealCell}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML=`<table class="soi-table"><tbody>${rows}</tbody></table>${d.note?`<div class="panel-note" style="margin-top:8px">${d.note}</div>`:''}`;
+}
+
+function updatePL(idx){
+  const d=plData[idx];
+  const el=document.getElementById('plPanel');
+  const noteHtml=d.note?`<div class="panel-note" style="margin-top:8px">${d.note}</div>`:'';
+  if(d.items.length===0){
+    const zeroColor='var(--text-muted)';
+    el.innerHTML=`
+      <div class="pl-row"><span class="pl-label" style="font-style:italic">No income statement activity</span><span class="pl-val pl-zero">—</span></div>
+      <div class="pl-total-row"><span class="pl-total-label">Net Income / (Loss)</span><span class="pl-total-val pl-zero">$0.0M</span></div>
+      ${noteHtml}`;
+    return;
+  }
+  const rows=d.items.map(item=>`
+    <div class="pl-row">
+      <span class="pl-label">${item.label}</span>
+      <span class="pl-val ${item.amt>0?'pl-pos':item.amt<0?'pl-neg':'pl-zero'}">${item.amt>=0?'+':''}${fmt(item.amt)}</span>
+    </div>`).join('');
+  const netCls=d.netIncome>0?'pl-pos':d.netIncome<0?'pl-neg':'pl-zero';
+  const netFmt=(d.netIncome>=0?'+':'')+fmt(d.netIncome);
+  el.innerHTML=`${rows}
+    <div class="pl-total-row">
+      <span class="pl-total-label">Net Income / (Loss)</span>
+      <span class="pl-total-val ${netCls}">${netFmt}</span>
+    </div>${noteHtml}`;
+}
+
+function render(idx){
+  const s=stages[idx];
+  const bs=bsStates[idx];
+  document.getElementById('bs-cash').textContent=fmt(bs[0]);
+  document.getElementById('bs-inv').textContent=fmt(bs[1]);
+  document.getElementById('bs-pc').textContent=fmt(bs[2]);
+  updateRF(idx);
+  updateSOI(idx);
+  updatePL(idx);
+  document.getElementById('stageCounter').textContent=`STAGE ${idx+1} OF 7`;
+  document.querySelector('header').setAttribute('data-stage',`Stage ${idx+1} of 7`);
+  document.querySelectorAll('.stage-btn').forEach((b,i)=>{
+    b.classList.remove('active','done');
+    b.removeAttribute('aria-current');
+    if(i===idx){b.classList.add('active');b.setAttribute('aria-current','step');}
+    else if(i<idx)b.classList.add('done');
+  });
+  document.getElementById('progressDots').innerHTML=stages.map((_,i)=>
+    `<button class="dot ${i===idx?'active':i<idx?'done':''}" onclick="goTo(${i})" aria-label="Go to stage ${i+1}"></button>`
+  ).join('');
+  document.getElementById('prevBtn').disabled=idx===0;
+  const nb=document.getElementById('nextBtn');
+  nb.textContent=idx===stages.length-1?'✓ Complete':'Next Stage →';
+  nb.disabled=idx===stages.length-1;
+
+  const flowHtml=s.flow.map(n=>n.a
+    ?`<div class="flow-arrow">→</div>`
+    :`<div class="flow-node ${n.t||''}">${n.l}<div class="fsub">${n.s}</div></div>`
+  ).join('');
+
+  const entriesHtml=s.entries.map(e=>`
+    <div class="entry-block">
+      <div class="entry-step-label">${e.step}</div>
+      <table class="je">
+        <thead><tr>
+          <th style="width:42%">Account</th>
+          <th style="width:11%">Side</th>
+          <th style="width:23%">Debit (DR)</th>
+          <th style="width:24%">Credit (CR)</th>
+        </tr></thead>
+        <tbody>${e.rows.map(r=>`
+          <tr>
+            <td class="${r.i?'acc-indent':'acc-name'}">${r.acc}</td>
+            <td><span class="acc-type ${r.side}">${r.side.toUpperCase()}</span></td>
+            <td class="amt ${r.dr==='—'?'blank':'dr'}">${r.dr}</td>
+            <td class="amt ${r.cr==='—'?'blank':'cr'}">${r.cr}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      ${e.note?`<div class="entry-note"><b>In practice:</b> ${e.note}</div>`:''}
+    </div>`).join('');
+
+  document.getElementById('mainContent').innerHTML=`
+    <div class="fade-in">
+      <div class="stage-header">
+        <div>
+          <div class="stage-chip">${s.chip}</div>
+          <div class="stage-title">${s.title}</div>
+          <div class="stage-desc">${s.desc}</div>
+        </div>
+        <div class="gaap-badge"><span>Standard</span>${s.gaap}<br><span style="font-size:10px;color:var(--text-muted)">${s.gaapNote}</span></div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-label">Money Flow</div>
+        <div class="flow-row">${flowHtml}</div>
+      </div>
+      <div class="entries-section">
+        <div class="entries-title">
+          Journal Entries — Intermediary / Fund Admin Books
+          <span class="step-pill">U.S. GAAP · ASC 946</span>
+        </div>
+        ${entriesHtml}
+      </div>
+      <div class="insight">${s.insight}</div>
+      ${s.info?`<div class="info-box">${s.info}</div>`:''}
+      ${s.warning?`<div class="warning-box">${s.warning}</div>`:''}
+    </div>`;
+  requestAnimationFrame(()=>{document.getElementById('mainContent').scrollTop=0;});
+}
+
+function goTo(idx){current=idx;render(current);}
+function nextStage(){if(current<stages.length-1)goTo(current+1);}
+function prevStage(){if(current>0)goTo(current-1);}
+render(0);
+</script>
+</body>
+</html>

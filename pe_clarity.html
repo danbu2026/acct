@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PE Clarity – Private Equity Accounting 101</title>
+<style>
+/* ── reset / base ───────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',Arial,sans-serif;font-size:15px;color:#1A2340;background:#F5F7FA}
+
+/* ── top bar ────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:56px;
+  background:#0F2044;display:flex;align-items:center;
+  padding:0 20px;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,.35)
+}
+#logo{color:#C9A84C;font-size:22px;font-weight:700;letter-spacing:.5px;white-space:nowrap;margin-right:32px}
+#logo span{color:#fff;font-weight:400;font-size:14px;margin-left:6px;vertical-align:middle}
+
+/* ── module tab bar ─────────────────────────────────────── */
+#tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+.tab{
+  color:#B8C8E8;font-size:13px;font-weight:600;padding:6px 14px;
+  border-radius:4px;cursor:pointer;white-space:nowrap;
+  transition:background .18s,color .18s;border:none;background:transparent
+}
+.tab:hover{background:rgba(255,255,255,.12);color:#fff}
+.tab.active{background:#C9A84C;color:#0F2044}
+
+/* ── layout shell ───────────────────────────────────────── */
+#shell{display:flex;height:calc(100vh - 56px);margin-top:56px}
+
+/* ── left sidebar ───────────────────────────────────────── */
+#lsidebar{
+  width:228px;min-width:228px;background:#fff;
+  border-right:1px solid #D0D8E8;overflow-y:auto;
+  display:flex;flex-direction:column;padding:12px 0
+}
+#lsidebar h3{
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:#5A6A8A;padding:8px 18px 4px
+}
+.topic-item{
+  padding:9px 18px;font-size:14px;color:#2A3A60;cursor:pointer;
+  border-left:3px solid transparent;line-height:1.35;
+  transition:background .15s,border-color .15s
+}
+.topic-item:hover{background:#F0F4FA}
+.topic-item.active{
+  background:#EEF3FF;border-left-color:#C9A84C;
+  color:#0F2044;font-weight:600
+}
+
+/* ── main content ───────────────────────────────────────── */
+#main{
+  flex:1;overflow-y:auto;padding:28px 32px;
+  background:#F5F7FA
+}
+.content-panel{display:none}
+.content-panel.active{display:block}
+
+.page-title{
+  font-size:26px;font-weight:700;color:#0F2044;
+  border-bottom:3px solid #C9A84C;padding-bottom:10px;margin-bottom:22px
+}
+.section-title{
+  font-size:18px;font-weight:700;color:#0F2044;
+  margin:28px 0 10px
+}
+.sub-title{
+  font-size:15px;font-weight:700;color:#2A3A60;
+  margin:20px 0 8px
+}
+p{line-height:1.75;margin-bottom:12px;color:#1A2340}
+ul,ol{padding-left:22px;margin-bottom:12px}
+li{line-height:1.75;margin-bottom:4px}
+
+/* info box */
+.info-box{
+  background:#EEF3FF;border-left:4px solid #0F2044;
+  border-radius:0 6px 6px 0;padding:14px 18px;margin:16px 0;font-size:14px
+}
+.info-box strong{color:#0F2044}
+/* gold highlight box */
+.gold-box{
+  background:#FDF8EC;border-left:4px solid #C9A84C;
+  border-radius:0 6px 6px 0;padding:14px 18px;margin:16px 0;font-size:14px
+}
+/* warning box */
+.warn-box{
+  background:#FFF4EC;border-left:4px solid #E07A10;
+  border-radius:0 6px 6px 0;padding:14px 18px;margin:16px 0;font-size:14px
+}
+/* formula box */
+.formula{
+  background:#0F2044;color:#C9A84C;font-family:Consolas,monospace;
+  font-size:14px;padding:14px 20px;border-radius:6px;
+  margin:14px 0;overflow-x:auto;white-space:pre-wrap
+}
+/* comparison table */
+.comp-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.comp-table th{background:#0F2044;color:#C9A84C;padding:10px 14px;text-align:left}
+.comp-table td{padding:10px 14px;border-bottom:1px solid #D0D8E8;vertical-align:top}
+.comp-table tr:nth-child(even) td{background:#F5F7FA}
+/* step cards */
+.steps{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.step{
+  display:flex;gap:14px;align-items:flex-start;
+  background:#fff;border:1px solid #D0D8E8;border-radius:8px;padding:14px 16px
+}
+.step-num{
+  background:#0F2044;color:#C9A84C;border-radius:50%;
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;flex-shrink:0
+}
+.step-body{flex:1}
+.step-body strong{font-size:15px;color:#0F2044}
+/* badge */
+.badge{
+  display:inline-block;padding:2px 9px;border-radius:12px;
+  font-size:12px;font-weight:700;margin-right:4px
+}
+.badge-navy{background:#0F2044;color:#fff}
+.badge-gold{background:#C9A84C;color:#0F2044}
+.badge-green{background:#1A7A3F;color:#fff}
+.badge-red{background:#BF1F2E;color:#fff}
+
+/* ── right sidebar ───────────────────────────────────────── */
+#rsidebar{
+  width:240px;min-width:240px;background:#fff;
+  border-left:1px solid #D0D8E8;overflow-y:auto;padding:14px 14px
+}
+.rs-section{margin-bottom:22px}
+.rs-section h4{
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  color:#5A6A8A;margin-bottom:8px;border-bottom:1px solid #D0D8E8;padding-bottom:4px
+}
+.rs-term{margin-bottom:10px}
+.rs-term strong{font-size:13px;color:#0F2044;display:block}
+.rs-term span{font-size:13px;color:#5A6A8A;line-height:1.5}
+.rs-formula{
+  background:#F5F7FA;border:1px solid #D0D8E8;border-radius:4px;
+  padding:7px 10px;font-family:Consolas,monospace;font-size:12px;
+  color:#0F2044;margin-bottom:8px;overflow-x:auto;white-space:pre-wrap
+}
+
+/* ── about page ─────────────────────────────────────────── */
+.about-card{
+  background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(15,32,68,.1);
+  max-width:740px;margin:0 auto;overflow:hidden
+}
+.about-header{
+  background:#0F2044;padding:32px 36px;display:flex;align-items:center;gap:24px
+}
+.about-avatar{
+  width:80px;height:80px;border-radius:50%;background:#C9A84C;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;color:#0F2044;flex-shrink:0
+}
+.about-header h2{color:#fff;font-size:22px;margin-bottom:4px}
+.about-header p{color:#B8C8E8;font-size:14px}
+.about-body{padding:28px 36px}
+.about-body p{font-size:15px;line-height:1.8;color:#2A3A60;margin-bottom:14px}
+.skills-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.skill-tag{
+  background:#EEF3FF;color:#0F2044;border:1px solid #C9A84C;
+  border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div id="logo">PE Clarity <span>Private Equity Accounting 101</span></div>
+  <div id="tabs">
+    <button class="tab active" onclick="switchModule(0)">🏛 PE Fundamentals</button>
+    <button class="tab" onclick="switchModule(1)">📒 Fund Accounting</button>
+    <button class="tab" onclick="switchModule(2)">📊 Fair Value</button>
+    <button class="tab" onclick="switchModule(3)">💰 Waterfall &amp; Carry</button>
+    <button class="tab" onclick="switchModule(4)">📈 Performance</button>
+    <button class="tab" onclick="switchModule(5)">📋 Investor Reporting</button>
+    <button class="tab" onclick="switchModule(6)">⚙ Allocations</button>
+    <button class="tab" onclick="switchModule(7)">🔬 Advanced Topics</button>
+    <button class="tab" onclick="switchModule(8)">👤 About</button>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="shell">
+
+<!-- LEFT SIDEBAR -->
+<div id="lsidebar">
+  <h3 id="ls-heading">Topics</h3>
+  <div id="ls-items"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+<div class="content-panel active" id="panel-0-0">
+<div class="page-title">What Is Private Equity?</div>
+<p>Private equity (PE) is a form of alternative investment where capital is raised from institutional and high-net-worth investors and deployed into <strong>private companies</strong> — businesses that are not listed on a public stock exchange. The goal is to generate superior risk-adjusted returns over a multi-year investment horizon, typically 10 years.</p>
+<p>Unlike public market investing, PE investors take an <strong>active role</strong> in the companies they own — improving operations, replacing management, making bolt-on acquisitions, or restructuring balance sheets — before exiting via a sale or IPO.</p>
+
+<div class="section-title">Why Private Equity Exists</div>
+<p>PE bridges the gap between businesses that need strategic capital and long-term partnerships, and investors seeking returns above what public markets typically offer. The <strong>illiquidity premium</strong> — extra return demanded for locking up capital — is the core economic rationale.</p>
+
+<div class="gold-box"><strong>Key Fact:</strong> Global PE AUM (assets under management) exceeded $13 trillion in 2024, making it one of the largest asset classes in institutional investing.</div>
+
+<div class="section-title">Types of Private Equity Strategies</div>
+<table class="comp-table">
+<tr><th>Strategy</th><th>Target Company</th><th>Typical Hold</th><th>Return Driver</th></tr>
+<tr><td><strong>Leveraged Buyout (LBO)</strong></td><td>Mature, cash-flowing companies</td><td>4–7 years</td><td>Financial engineering, operational improvement, multiple expansion</td></tr>
+<tr><td><strong>Venture Capital (VC)</strong></td><td>Early-stage startups</td><td>7–12 years</td><td>Revenue growth, equity appreciation</td></tr>
+<tr><td><strong>Growth Equity</strong></td><td>Established but growing companies</td><td>3–7 years</td><td>Revenue scaling, market expansion</td></tr>
+<tr><td><strong>Distressed / Turnaround</strong></td><td>Financially stressed companies</td><td>2–5 years</td><td>Restructuring, operational fix</td></tr>
+<tr><td><strong>Real Assets / Infrastructure</strong></td><td>Physical assets (energy, real estate)</td><td>10–20 years</td><td>Stable cash flows, inflation protection</td></tr>
+<tr><td><strong>Fund of Funds</strong></td><td>Other PE funds</td><td>10–15 years</td><td>Diversification, access</td></tr>
+</table>
+
+<div class="section-title">The Private Equity Lifecycle</div>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Fundraising (Year 0–1)</strong><br>GP markets the fund to institutional LPs. A Limited Partnership Agreement (LPA) is signed. Target fund size is set (e.g., $500M). Capital commitments are secured but not yet drawn.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>Investment Period (Year 1–5)</strong><br>Capital is "called" from LPs as deals are found. Capital calls fund acquisitions. Typically 3–5 years; often 50% of commitments deployed in first 2 years.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>Value Creation (Ongoing)</strong><br>GP actively manages portfolio companies — cost reduction, revenue growth, add-on acquisitions, management changes, geographic expansion.</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><strong>Harvesting / Exits (Year 4–10)</strong><br>Portfolio companies are sold via strategic sale, secondary buyout, or IPO. Proceeds are distributed to LPs (and GP carry) as companies are exited.</div></div>
+<div class="step"><div class="step-num">5</div><div class="step-body"><strong>Wind-Down (Year 10+)</strong><br>Final audits, tax filings (K-1s), clawback calculations, fund dissolution. Some funds extend 1–2 years with LP consent.</div></div>
+</div>
+</div>
+<div class="content-panel" id="panel-0-1">
+<div class="page-title">Key Participants in a PE Fund</div>
+<p>Understanding who does what in a PE fund is foundational. As an accountant, you will interact with nearly all of these parties directly or indirectly.</p>
+
+<div class="section-title">General Partner (GP)</div>
+<p>The <strong>General Partner</strong> is the fund manager — typically the PE firm itself. The GP raises the fund, makes investment decisions, manages portfolio companies, and reports to LPs. The GP has <strong>unlimited liability</strong> for the fund's obligations (in a traditional LP structure), which is why GPs are often structured as LLCs.</p>
+<ul>
+<li>Earns a <strong>management fee</strong> (typically 1.5–2.0% of committed capital per year)</li>
+<li>Earns <strong>carried interest</strong> (typically 20% of profits above the hurdle rate)</li>
+<li>Co-invests its own capital (typically 1–5% of the fund) to align incentives</li>
+</ul>
+
+<div class="section-title">Limited Partners (LPs)</div>
+<p>LPs are the investors who provide the capital. They have <strong>limited liability</strong> — they can only lose what they invest. LPs are passive; they do not make investment decisions or manage the fund.</p>
+<table class="comp-table">
+<tr><th>LP Type</th><th>Examples</th><th>Typical Commitment</th></tr>
+<tr><td>Public Pension Funds</td><td>CalPERS, Ontario Teachers'</td><td>$50M–$500M+</td></tr>
+<tr><td>Sovereign Wealth Funds</td><td>GIC (Singapore), ADIA (Abu Dhabi)</td><td>$100M–$1B+</td></tr>
+<tr><td>Endowments &amp; Foundations</td><td>Yale, Harvard, Ford Foundation</td><td>$10M–$200M</td></tr>
+<tr><td>Insurance Companies</td><td>MetLife, Prudential</td><td>$25M–$250M</td></tr>
+<tr><td>Family Offices / HNW</td><td>Varies</td><td>$1M–$50M</td></tr>
+<tr><td>Fund of Funds</td><td>HarbourVest, Pantheon</td><td>$25M–$200M</td></tr>
+</table>
+
+<div class="section-title">Fund Administrator</div>
+<p>Third-party firm responsible for <strong>independent NAV calculation</strong>, capital account maintenance, capital call and distribution processing, financial statement preparation, and LP reporting. As a PE accountant, you will work closely with the fund admin or be the fund admin.</p>
+
+<div class="section-title">Auditors</div>
+<p>Annual financial statements are audited by a Big 4 or specialized PE-focused audit firm (e.g., Deloitte, EY, KPMG, PwC, Grant Thornton). Auditors review fair value of investments, carried interest calculations, and LP capital account accuracy.</p>
+
+<div class="section-title">Legal Counsel</div>
+<p>Drafts the Limited Partnership Agreement (LPA), side letters, subscription documents, and deal documentation. The LPA is the governing document for all economics — fees, carry, clawback, capital calls, distributions.</p>
+
+<div class="section-title">Valuation Specialists</div>
+<p>For Level 3 investments without observable market prices, independent valuation firms are hired to opine on fair value. This is particularly important for auditors and for funds with quarterly reporting to LPs.</p>
+
+<div class="gold-box"><strong>Accountant's Tip:</strong> The LPA is your bible. Every fee calculation, every waterfall step, every allocation rule is defined there. Read it carefully before you begin any calculation — fund structures vary significantly.</div>
+</div>
+<div class="content-panel" id="panel-0-2">
+<div class="page-title">The Limited Partnership Agreement (LPA)</div>
+<p>The LPA is the legal contract that governs every aspect of the fund. As a PE accountant, the LPA is your primary reference — it defines how you calculate fees, allocate income, and distribute proceeds.</p>
+
+<div class="section-title">Key LPA Provisions for Accountants</div>
+
+<div class="sub-title">1. Capital Commitments &amp; Calls</div>
+<p>Defines each LP's total commitment (e.g., $50M), the investment period (typically 5 years), and the notice period for capital calls (typically 10 business days). Capital calls are the mechanism by which the GP draws down LP commitments.</p>
+
+<div class="sub-title">2. Management Fee</div>
+<p>Typically 2% per year on <em>committed capital</em> during the investment period, stepping down to 1.5% on <em>invested capital</em> (NAV of remaining portfolio) in the harvest period. Some LPAs offset fees against transaction fees or monitoring fees the GP earns from portfolio companies.</p>
+<div class="formula">Annual Management Fee = Fee Rate × Fee Base
+Example: 2.0% × $500M committed = $10M/year
+Quarterly: $10M ÷ 4 = $2.5M per quarter</div>
+
+<div class="sub-title">3. Preferred Return (Hurdle Rate)</div>
+<p>The minimum annual return LPs must receive before the GP earns carry. Industry standard is <strong>8% per annum</strong>, compounded annually. Some funds use a simple (non-compounding) hurdle.</p>
+
+<div class="sub-title">4. Carried Interest</div>
+<p>The GP's share of profits above the hurdle rate. Standard is <strong>20%</strong> of profits. The LPA specifies whether carry is calculated on a deal-by-deal or whole-of-fund basis (see the Waterfall module).</p>
+
+<div class="sub-title">5. Clawback</div>
+<p>Requires the GP to return carried interest previously received if, at fund wind-down, total carry paid exceeds the GP's entitlement. The LPA specifies the clawback calculation, interest (if any), and tax gross-up provisions.</p>
+
+<div class="sub-title">6. Key Man Provisions</div>
+<p>Suspends the investment period if certain named individuals (key men) leave the GP. Protects LPs from investing capital with a materially changed team.</p>
+
+<div class="sub-title">7. No-Fault Divorce / Removal</div>
+<p>Allows a supermajority of LPs (typically 75%+ in interest) to remove the GP or terminate the fund. This is the LP's ultimate protective mechanism.</div>
+
+<div class="sub-title">8. Side Letters</div>
+<p>Bilateral agreements between the GP and specific LPs granting preferential terms — lower fees, co-investment rights, MFN (most favored nation) clauses, enhanced reporting. As accountant, you may need to track different fee structures per LP.</p>
+
+<div class="warn-box"><strong>Watch Out:</strong> Side letters can materially change your management fee calculations for specific LPs. Always flag side letter LPs in your fee schedules and reconcile individually.</div>
+</div>
+<div class="content-panel" id="panel-0-3">
+<div class="page-title">Fund Formation &amp; Legal Structures</div>
+
+<div class="section-title">Common Legal Structures</div>
+
+<div class="sub-title">Delaware Limited Partnership (Most Common – US)</div>
+<p>The dominant structure for US PE funds. Flexible, well-precedented, and tax-transparent (pass-through). The fund files a partnership tax return (Form 1065); each LP receives a Schedule K-1 reporting their share of income, gains, and losses.</p>
+
+<div class="sub-title">Cayman Islands Exempted Limited Partnership</div>
+<p>Used for funds targeting international investors or for tax neutrality. Cayman funds are tax-exempt at the fund level. Often paired with a Delaware fund in a "parallel fund" structure.</p>
+
+<div class="sub-title">Parallel Fund Structure</div>
+<p>Two (or more) legal entities investing side by side in every deal in the same proportions. A US taxable entity (Delaware LP) for US tax-exempt investors, and a Cayman entity for non-US investors and US taxable investors who prefer offshore structures. Each fund has its own books, but economics are mirror-image.</p>
+
+<div class="info-box"><strong>Example Structure:</strong><br>
+• Maple Capital Partners IV, L.P. (Delaware) → US pension funds, endowments<br>
+• Maple Capital Partners IV Offshore, L.P. (Cayman) → Sovereign wealth funds, foreign pensions<br>
+• Both funds invest side-by-side via a single operating entity (Maple Capital Partners IV Master, L.P.)</div>
+
+<div class="sub-title">Luxembourg Structures (SCSp / SCA)</div>
+<p>Common for European funds. The SCSp (Société en Commandite Spéciale) is Luxembourg's LP equivalent. AIFMD-compliant structures are required for marketing to European professional investors.</p>
+
+<div class="section-title">Umbrella / Master-Feeder Structures</div>
+<p>Some large funds use a master fund where all portfolio investments are held, with multiple feeder funds (US, offshore, ERISA-friendly) that pool capital into the master. Simplifies deal execution but adds accounting complexity — the master fund consolidates portfolio companies while feeders hold only the master fund interest.</p>
+
+<div class="section-title">Entity Selection for the GP</div>
+<p>The GP entity is typically a Delaware LLC or limited partnership. The GP LLC manages the fund and acts as the carried interest vehicle. Many GPs have a separate management company LLC that employs staff and charges management fees, and a separate GP LLC that receives carry — this separation has tax and legal rationale.</p>
+</div>
+<div class="content-panel" id="panel-1-0">
+<div class="page-title">Accounting Standards for PE Funds</div>
+<p>PE funds are <strong>investment companies</strong> under both US GAAP and IFRS. This classification triggers a specialized accounting model that is fundamentally different from operating company accounting. Understanding this distinction is the single most important conceptual leap for a junior PE accountant.</p>
+
+<div class="section-title">US GAAP: ASC 946</div>
+<p><strong>ASC 946 (Financial Services — Investment Companies)</strong> is the primary US GAAP standard for PE funds. The key principle:</p>
+<div class="gold-box"><strong>Core Rule:</strong> Investment companies measure ALL investments at <strong>fair value</strong>, and ALL changes in fair value flow through the <strong>income statement</strong> (Statement of Operations). There is no OCI (Other Comprehensive Income) for investment companies.</div>
+<p>This means unrealized appreciation (or depreciation) on portfolio company investments is recognized in net income every period — even if the investment has not been sold. This is dramatically different from operating company accounting where equity investments might be measured at cost or using the equity method.</p>
+
+<div class="section-title">IFRS: IAS 28 with FVTPL Election</div>
+<p>Under IFRS, PE funds typically hold interests in portfolio companies. Normally IAS 28 (Investments in Associates) would require equity method accounting for significant influence (20%+ ownership). However, <strong>IAS 28 contains an exemption</strong>: venture capital organizations and similar entities may elect to measure such investments at <strong>Fair Value Through Profit or Loss (FVTPL)</strong>. PE funds universally elect this exemption.</p>
+
+<div class="section-title">Key Differences: Investment Company vs. Operating Company</div>
+<table class="comp-table">
+<tr><th>Item</th><th>Operating Company (GAAP)</th><th>Investment Company (ASC 946)</th></tr>
+<tr><td>Portfolio investments</td><td>Cost, equity method, or AFS</td><td>Always at Fair Value</td></tr>
+<tr><td>Unrealized gains/losses</td><td>OCI or not recognized</td><td>P&amp;L (income statement)</td></tr>
+<tr><td>Consolidation of subsidiaries</td><td>Required (ASC 810)</td><td>Generally NOT consolidated (see Adv. Topics)</td></tr>
+<tr><td>Primary performance metric</td><td>EBITDA, EPS</td><td>NAV (Net Asset Value)</td></tr>
+<tr><td>Revenue recognition</td><td>ASC 606 (complex)</td><td>Realized gains + dividend/interest income</td></tr>
+</table>
+
+<div class="section-title">Investment Company Criteria (ASC 946-10-15)</div>
+<p>To qualify as an investment company, an entity must meet all of the following:</p>
+<ul>
+<li>It is an entity that is registered under the Investment Company Act of 1940, <strong>OR</strong> it obtains funds from investors to provide investment management services <strong>AND</strong> has the following attributes:</li>
+<li><strong>Investment activity:</strong> Business purpose is investing for returns (capital appreciation, investment income, or both)</li>
+<li><strong>Unit ownership:</strong> Ownership interests are in the form of equity or partnership interests</li>
+<li><strong>Pooling of funds:</strong> Multiple investors pool their funds</li>
+<li><strong>Reporting entity:</strong> Manages investments on behalf of investors</li>
+<li><strong>Fair value management:</strong> Manages and evaluates substantially all of its investments on a fair value basis</li>
+</ul>
+<div class="info-box">PE funds virtually always meet these criteria. The critical attribute is <strong>fair value management</strong> — the GP makes investment decisions based on fair values, and reports to LPs using fair values.</div>
+</div>
+<div class="content-panel" id="panel-1-1">
+<div class="page-title">PE Fund Financial Statements</div>
+<p>A PE fund's annual financial statements differ significantly from those of an operating company. Knowing what each statement shows — and how it connects to the others — is fundamental to your work.</p>
+
+<div class="section-title">1. Statement of Assets and Liabilities (Balance Sheet)</div>
+<p>Shows the fund's financial position at a point in time. The primary asset is the <strong>portfolio of investments at fair value</strong>.</p>
+<table class="comp-table">
+<tr><th>Assets</th><th>Liabilities &amp; Partners' Capital</th></tr>
+<tr><td>Investments at Fair Value: $180,000,000</td><td>Management fees payable: $2,500,000</td></tr>
+<tr><td>Cash and cash equivalents: $8,000,000</td><td>Accrued expenses: $450,000</td></tr>
+<tr><td>Receivable for investments sold: $2,000,000</td><td>Other liabilities: $150,000</td></tr>
+<tr><td>Dividends/interest receivable: $500,000</td><td><strong>Total Liabilities: $3,100,000</strong></td></tr>
+<tr><td></td><td>Partners' Capital (NAV): $187,400,000</td></tr>
+<tr><td><strong>Total Assets: $190,500,000</strong></td><td><strong>Total L &amp; PC: $190,500,000</strong></td></tr>
+</table>
+
+<div class="section-title">2. Statement of Operations (Income Statement)</div>
+<p>Shows income and expenses for the period. Under ASC 946, <strong>unrealized gains/losses are income</strong>.</p>
+<div class="formula">Investment Income:
+  Dividend income                    $1,200,000
+  Interest income                      $350,000
+  Total investment income            $1,550,000
+
+Expenses:
+  Management fees                   ($2,500,000)
+  Professional fees (audit, legal)    ($450,000)
+  Total expenses                    ($2,950,000)
+
+Net Investment Loss                 ($1,400,000)
+
+Net Realized Gain on Investments    $12,500,000
+Net Change in Unrealized Appreciation $8,750,000
+
+Net Increase in Partners' Capital   $19,850,000</div>
+
+<div class="section-title">3. Statement of Changes in Partners' Capital</div>
+<p>The bridge between opening NAV and closing NAV. This is the most critical statement for LP reporting — it ties directly to individual capital account statements.</p>
+<div class="formula">Partners' Capital, Beginning of Period   $175,000,000
+Add: Capital contributions (calls)         $10,000,000
+Add: Net income for period                 $19,850,000
+Less: Distributions to partners           ($17,450,000)
+Partners' Capital, End of Period          $187,400,000</div>
+
+<div class="section-title">4. Schedule of Investments</div>
+<p>A detailed listing of every portfolio company investment, showing:</p>
+<ul>
+<li>Investment name and type (equity, debt, convertible)</li>
+<li>Industry and geography</li>
+<li>Cost basis (total invested capital)</li>
+<li>Fair value at period end</li>
+<li>Percentage of net assets</li>
+<li>Fair value level (Level 1, 2, or 3)</li>
+</ul>
+<div class="warn-box"><strong>Note:</strong> The Schedule of Investments is audited and typically accounts for 90%+ of total assets. Auditors spend significant time on this schedule — particularly Level 3 valuations.</div>
+
+<div class="section-title">5. Financial Statement Notes</div>
+<p>Required disclosures include: significant accounting policies, fair value measurement, related party transactions, commitments and contingencies, financial highlights (IRR, MOIC), and subsequent events. Notes for PE funds tend to be extensive due to fair value complexity.</p>
+</div>
+<div class="content-panel" id="panel-1-2">
+<div class="page-title">NAV &amp; Capital Account Fundamentals</div>
+<p>Net Asset Value (NAV) is the fund's total equity — what belongs to the partners after all liabilities. Every LP's <strong>capital account</strong> represents their individual share of NAV.</p>
+
+<div class="section-title">What Is NAV?</div>
+<div class="formula">NAV = Total Assets at Fair Value − Total Liabilities
+NAV = Investments FV + Cash + Receivables − Management Fees Payable − Other Liabilities</div>
+<p>NAV changes every period based on: capital calls received, investment appreciation/depreciation, income earned, expenses charged, and distributions made.</p>
+
+<div class="section-title">Capital Account Structure</div>
+<p>Each LP (and the GP) has a capital account that tracks their individual position in the fund from inception to date. Capital accounts are <strong>always cumulative from inception</strong> — they do not reset each year.</p>
+<div class="formula">Capital Account Rollforward (Cumulative from Inception):
++ Contributions (capital calls funded by this LP)
++ Allocated Net Income (realized gains + unrealized changes + income)
+− Allocated Expenses (management fees, fund expenses)
+− Distributions (return of capital + profit distributions)
+= Ending Capital Account Balance (= LP's share of NAV)</div>
+
+<div class="section-title">Example Capital Account</div>
+<table class="comp-table">
+<tr><th>Item</th><th>Amount</th><th>Cumulative</th></tr>
+<tr><td>Commitment</td><td>$10,000,000</td><td>—</td></tr>
+<tr><td>Year 1: Capital called (50%)</td><td>$5,000,000</td><td>$5,000,000</td></tr>
+<tr><td>Year 1: Unrealized appreciation allocated</td><td>$750,000</td><td>$5,750,000</td></tr>
+<tr><td>Year 1: Management fee allocated</td><td>($200,000)</td><td>$5,550,000</td></tr>
+<tr><td>Year 2: Additional capital called (30%)</td><td>$3,000,000</td><td>$8,550,000</td></tr>
+<tr><td>Year 2: Realized gain allocated</td><td>$2,100,000</td><td>$10,650,000</td></tr>
+<tr><td>Year 2: Distribution (return of capital + gain)</td><td>($4,500,000)</td><td>$6,150,000</td></tr>
+<tr><td><strong>Ending Capital Account</strong></td><td></td><td><strong>$6,150,000</strong></td></tr>
+</table>
+
+<div class="section-title">Unfunded Commitment</div>
+<p>The difference between an LP's total commitment and the capital actually called to date. This is a <strong>contingent liability for the LP</strong>, not recorded on the fund's balance sheet (since it hasn't been called).</p>
+<div class="formula">Unfunded Commitment = Total Commitment − Cumulative Capital Called
+Example: $10,000,000 − $8,000,000 = $2,000,000 remaining unfunded</div>
+
+<div class="section-title">GP Capital Account</div>
+<p>The GP commits a percentage (typically 1–3%) of the fund and has its own capital account. The GP capital account is separate from carried interest. GP capital participates in gains and losses pro-rata, while carry is an additional profit allocation above the LP hurdle.</p>
+<div class="gold-box"><strong>Key Point:</strong> A LP's capital account balance is their NAV — what they would receive if the fund were liquidated today at current fair values. This is the number LPs track closely for performance reporting.</div>
+</div>
+<div class="content-panel" id="panel-1-3">
+<div class="page-title">Common Journal Entries in PE Fund Accounting</div>
+<p>These are the core transactions you will record as a PE fund accountant. Each entry should be reconciled to LP capital accounts and the Schedule of Investments.</p>
+
+<div class="section-title">1. Capital Call (LP Contribution)</div>
+<p>When the GP issues a capital call, LPs wire funds to the fund's bank account.</p>
+<div class="formula">DR  Cash                                   $10,000,000
+  CR  Partners' Capital — LP A (80%)          $8,000,000
+  CR  Partners' Capital — LP B (15%)          $1,500,000
+  CR  Partners' Capital — GP (5%)               $500,000</div>
+
+<div class="section-title">2. Investment Purchase</div>
+<p>When the fund acquires a portfolio company investment.</p>
+<div class="formula">DR  Investments at Fair Value (cost)      $9,500,000
+DR  Transaction Costs (if expensed)          $150,000
+  CR  Cash                                   $9,650,000
+Note: Under ASC 946, transaction costs are typically expensed, not capitalized into cost basis.</div>
+
+<div class="section-title">3. Quarterly Fair Value Mark</div>
+<p>At each reporting date, investments are marked to their estimated fair values.</p>
+<div class="formula">If FV increased:
+DR  Investments at Fair Value              $2,000,000
+  CR  Net Change in Unrealized Appreciation  $2,000,000
+
+If FV decreased:
+DR  Net Change in Unrealized Depreciation  $1,200,000
+  CR  Investments at Fair Value             $1,200,000</div>
+
+<div class="section-title">4. Investment Realization (Exit)</div>
+<p>When a portfolio company is sold, unrealized gain/loss is reclassified to realized.</p>
+<div class="formula">Step 1 — Remove unrealized:
+DR  Net Change in Unrealized Appreciation  $4,500,000  [reverse prior unrealized]
+  CR  Investments at Fair Value             $4,500,000
+
+Step 2 — Record sale proceeds:
+DR  Cash / Receivable                     $15,000,000
+  CR  Investments at Fair Value (cost)     $9,500,000   [original cost]
+  CR  Net Realized Gain on Investments     $5,500,000   [proceeds − cost]</div>
+
+<div class="section-title">5. Management Fee Accrual</div>
+<div class="formula">DR  Management Fee Expense                 $625,000   [quarterly: 2.5M/4]
+  CR  Management Fees Payable                $625,000</div>
+
+<div class="section-title">6. Management Fee Payment</div>
+<div class="formula">DR  Management Fees Payable               $625,000
+  CR  Cash                                   $625,000</div>
+
+<div class="section-title">7. Distribution to Partners</div>
+<p>When proceeds from exits are distributed to LPs (and potentially carry to GP).</p>
+<div class="formula">DR  Partners' Capital — LP A              $8,000,000  [80%]
+DR  Partners' Capital — LP B              $1,500,000  [15%]
+DR  Partners' Capital — GP (return)         $500,000  [5% co-invest]
+DR  Partners' Capital — GP (carry)       $2,000,000  [20% of profit above hurdle]
+  CR  Cash                                $12,000,000</div>
+
+<div class="section-title">8. Interest Income</div>
+<div class="formula">DR  Accrued Interest Receivable               $85,000
+  CR  Interest Income                           $85,000</div>
+
+<div class="warn-box"><strong>Common Error:</strong> Failing to reclassify unrealized to realized upon exit (Step 1 above). If you skip Step 1, your total gain will be double-counted — once in unrealized (prior periods) and again in realized (current period). Always reverse the unrealized position on exit date.</div>
+</div>
+<div class="content-panel" id="panel-2-0">
+<div class="page-title">Fair Value Framework — ASC 820 &amp; IFRS 13</div>
+<p>Fair value measurement is the cornerstone of PE fund accounting. Because virtually all portfolio investments are private (no quoted market price), determining fair value requires significant judgment and expertise.</p>
+
+<div class="section-title">Definition of Fair Value</div>
+<div class="gold-box"><strong>ASC 820 / IFRS 13 Definition:</strong> Fair value is the price that would be received to <em>sell</em> an asset or <em>paid to transfer</em> a liability in an <strong>orderly transaction</strong> between <strong>market participants</strong> at the measurement date.</div>
+
+<p>Key elements of this definition:</p>
+<ul>
+<li><strong>Exit price:</strong> The price to sell (not what you paid to buy)</li>
+<li><strong>Orderly transaction:</strong> Not a forced liquidation or distress sale</li>
+<li><strong>Market participants:</strong> Hypothetical willing buyer and seller, knowledgeable, not the fund itself</li>
+<li><strong>Measurement date:</strong> Fair value is specific to a point in time</li>
+</ul>
+
+<div class="section-title">The Fair Value Hierarchy</div>
+<p>ASC 820 establishes a three-level hierarchy based on the observability of inputs:</p>
+<table class="comp-table">
+<tr><th>Level</th><th>Input Type</th><th>PE Examples</th><th>Frequency in PE</th></tr>
+<tr><td><span class="badge badge-green">Level 1</span></td><td>Quoted prices in active markets for identical assets</td><td>Publicly traded portfolio company shares (post-IPO), liquid debt securities</td><td>Rare (~5% of PE portfolios)</td></tr>
+<tr><td><span class="badge badge-gold">Level 2</span></td><td>Observable inputs other than Level 1 (quoted prices for similar assets, market corroborated inputs)</td><td>Yield-based debt, recently priced leveraged loans, credit-bid situations</td><td>Moderate (~20–30%)</td></tr>
+<tr><td><span class="badge badge-red">Level 3</span></td><td>Unobservable inputs based on entity's own assumptions</td><td>Private equity investments (buyout, growth, VC), illiquid debt</td><td>Dominant (~65–75%)</td></tr>
+</table>
+
+<div class="section-title">Level 3 Rollforward Disclosure</div>
+<p>For Level 3 investments, funds must disclose a rollforward showing:</p>
+<div class="formula">Level 3 Investment Rollforward:
+Opening Balance (FV at start of period)          $80,000,000
++ Purchases / Additional investments              $12,000,000
+− Sales / Realizations (at cost)                 ($9,500,000)
++ Net Realized Gain (reclassified from unrealized) $5,500,000
++ Net Change in Unrealized Appreciation           $8,200,000
++ Transfers into Level 3                          $2,000,000
+− Transfers out of Level 3                            $0
+Closing Balance (FV at end of period)            $98,200,000</div>
+
+<div class="section-title">IPEV Guidelines</div>
+<p>The <strong>International Private Equity and Venture Capital (IPEV) Valuation Guidelines</strong> provide practical guidance on how to apply fair value measurement to PE investments. They are not accounting standards themselves but are widely accepted as best practice by PE funds globally.</p>
+<p>IPEV outlines the following valuation techniques in order of preference:</p>
+<ol>
+<li>Price of Recent Investment</li>
+<li>Multiples (EV/EBITDA, EV/Revenue, P/E)</li>
+<li>Net Assets (for asset-heavy companies)</li>
+<li>Discounted Cash Flows (DCF)</li>
+<li>Discounted Cash Flows from an Industry Participant</li>
+<li>Industry Valuation Benchmarks</li>
+<li>Available Market Prices</li>
+</ol>
+</div>
+<div class="content-panel" id="panel-2-1">
+<div class="page-title">Valuation Methods for Private Investments</div>
+
+<div class="section-title">1. Market Approach — Comparable Company Multiples</div>
+<p>The most commonly used approach for established, profitable businesses. Applies a valuation multiple derived from comparable public companies or recent M&amp;A transactions to the portfolio company's financial metric.</p>
+<div class="formula">Enterprise Value = EBITDA × EV/EBITDA Multiple
+Equity Value = Enterprise Value − Net Debt
+
+Example:
+Portfolio Company EBITDA: $25M
+Comparable companies trade at 8.5× EBITDA
+EV = $25M × 8.5 = $212.5M
+Less: Net Debt = ($65M)
+Equity Value = $147.5M</div>
+
+<p><strong>Selecting the right multiple</strong> requires judgment:</p>
+<ul>
+<li>Use public company comps that are truly comparable (industry, size, growth, margins)</li>
+<li>Apply a <strong>private company discount</strong> (illiquidity discount, control vs. minority)</li>
+<li>Cross-check with recent M&amp;A transaction multiples (often higher than public comps)</li>
+<li>Consider company-specific factors (growth premium, distress discount)</li>
+</ul>
+
+<div class="section-title">2. Income Approach — Discounted Cash Flow (DCF)</div>
+<p>Values the company based on the present value of its projected future cash flows. More inputs, more assumptions, but useful when the company has a distinctive growth profile not reflected in comps.</p>
+<div class="formula">Intrinsic Value = Σ [FCF_t / (1+WACC)^t] + Terminal Value / (1+WACC)^n
+
+Terminal Value (Gordon Growth): FCF_n × (1+g) / (WACC − g)
+
+Key inputs:
+• Free Cash Flow projections (5–10 year forecast)
+• WACC (weighted average cost of capital, typically 10–15% for PE)
+• Terminal growth rate (typically 2–3%)
+• Terminal multiple (cross-check)</div>
+
+<div class="warn-box"><strong>DCF Sensitivity:</strong> A 1% change in WACC can change the valuation by 15–25%. A 0.5% change in terminal growth can shift value by 10–15%. Always run sensitivity tables and cross-check vs. comparables.</div>
+
+<div class="section-title">3. Price of Recent Investment</div>
+<p>Shortly after a new investment (typically first 12 months if no significant events), cost may be the best indicator of fair value. However, this is <em>not</em> a permanent default — the fund must monitor for calibration triggers:</p>
+<ul>
+<li>Significant changes in company performance vs. underwriting case</li>
+<li>Market-wide multiple compression or expansion</li>
+<li>New financing rounds at different valuations</li>
+<li>Industry-specific events</li>
+</ul>
+
+<div class="section-title">4. Net Asset Value (Asset Approach)</div>
+<p>Used for asset-holding companies (real estate, natural resources, holding companies). Values the sum of individual assets at their fair values, less liabilities.</p>
+
+<div class="section-title">Calibration</div>
+<p>IPEV strongly recommends <strong>calibration</strong> — at the initial investment date, record the fair value technique and inputs that reconcile to the transaction price. Then at each subsequent measurement date, use those same inputs (adjusted for market changes) to assess whether FV has changed. Calibration creates an audit trail and defensible valuation process.</p>
+
+<div class="section-title">Discounts and Premiums</div>
+<table class="comp-table">
+<tr><th>Adjustment</th><th>When Applied</th><th>Typical Range</th></tr>
+<tr><td>Discount for Lack of Marketability (DLOM)</td><td>Minority interest, restricted shares</td><td>15–30%</td></tr>
+<tr><td>Discount for Lack of Control (DLOC)</td><td>Non-controlling minority position</td><td>10–25%</td></tr>
+<tr><td>Control Premium</td><td>Majority / controlling interest</td><td>20–40% above minority</td></tr>
+<tr><td>Key Man Discount</td><td>Company highly dependent on one individual</td><td>5–15%</td></tr>
+</table>
+</div>
+<div class="content-panel" id="panel-2-2">
+<div class="page-title">Valuation Governance &amp; Process</div>
+<p>Fair value governance matters as much as the valuation technique itself. Auditors, regulators, and sophisticated LPs all scrutinize the process as much as the number.</p>
+
+<div class="section-title">Valuation Committee</div>
+<p>Most institutional PE funds have a <strong>Valuation Committee</strong> that meets quarterly to review and approve all investment fair values. Committee membership typically includes:</p>
+<ul>
+<li>CFO or COO of the GP</li>
+<li>Senior investment professionals (deal team)</li>
+<li>Head of Finance / Fund Controller</li>
+<li>Independent member (best practice)</li>
+</ul>
+<p>The deal team proposes valuations; finance challenges and validates; the committee approves. This separation of duties is critical for audit purposes.</p>
+
+<div class="section-title">Third-Party Valuation Specialists</div>
+<p>For large or complex Level 3 positions, GPs increasingly engage independent valuation firms to provide a fairness opinion or valuation conclusion. This is especially common for:</p>
+<ul>
+<li>End-of-year (audited) valuations</li>
+<li>Large unrealized positions ($50M+)</li>
+<li>Distressed or turnaround investments</li>
+<li>Early-stage venture investments</li>
+</ul>
+
+<div class="section-title">The Accounting Team's Role</div>
+<p>As a PE fund accountant, your valuation responsibilities include:</p>
+<ol>
+<li>Collecting and organizing financial data from portfolio companies (monthly/quarterly)</li>
+<li>Preparing valuation workpapers (comp analysis, DCF models, FV schedules)</li>
+<li>Running sensitivity analysis and documenting assumptions</li>
+<li>Preparing Valuation Committee memos and supporting materials</li>
+<li>Recording approved FV marks as journal entries</li>
+<li>Preparing Level 3 rollforward disclosures for financial statements</li>
+<li>Responding to audit queries on fair value support</li>
+</ol>
+
+<div class="gold-box"><strong>Career Tip:</strong> Being able to build and defend a valuation model — and articulate the key assumptions clearly — is one of the most valued skills in PE fund accounting. It moves you from "transactional accountant" to "trusted finance partner."</div>
+</div>
+<div class="content-panel" id="panel-3-0">
+<div class="page-title">Carried Interest — The GP's Profit Share</div>
+<p>Carried interest (or "carry") is the GP's share of the fund's profits. It is the primary economic incentive for the GP and aligns GP interests with LP interests — the GP only earns carry if LPs make money above the agreed hurdle rate.</p>
+
+<div class="section-title">Standard Carry Structure</div>
+<table class="comp-table">
+<tr><th>Parameter</th><th>Standard</th><th>Variations</th></tr>
+<tr><td>Carry Rate</td><td>20% of profits</td><td>15% (manager-friendly LPs), 25–30% (top-tier funds)</td></tr>
+<tr><td>Preferred Return (Hurdle)</td><td>8% per annum</td><td>6–10%; some funds have no hurdle</td></tr>
+<tr><td>Hurdle Compounding</td><td>Compounded annually</td><td>Simple (non-compounded) in some structures</td></tr>
+<tr><td>GP Catch-Up</td><td>100% until GP makes up shortfall</td><td>50% catch-up in some funds</td></tr>
+<tr><td>Carry Basis</td><td>Whole-of-fund (European)</td><td>Deal-by-deal (American)</td></tr>
+</table>
+
+<div class="section-title">The Four-Tier Waterfall</div>
+<p>The standard waterfall distributes cash in four sequential tiers:</p>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Return of Capital</strong><br>LPs receive 100% of all contributed capital back (all capital calls funded, including amounts used to pay management fees). No profits yet — just getting invested capital back. GP co-invest capital also returned here.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>Preferred Return (Hurdle)</strong><br>LPs receive their preferred return — 8% per year compounded annually on contributed capital from the date of each call. The preferred return accrues from the call date, not the fund inception date.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>GP Catch-Up</strong><br>The GP receives 100% of distributions until it has received 20% of all profits distributed so far (the preferred return plus the catch-up). This "catches up" the GP so its share equals 20% of total profits.</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><strong>Carried Interest Split</strong><br>All remaining proceeds split: 80% to LPs, 20% to GP (carried interest). This continues for all remaining distributions.</div></div>
+</div>
+
+<div class="section-title">Why Does the Hurdle Matter?</div>
+<div class="formula">Example: $100M fund, $160M returned to LPs and GP combined
+Invested capital: $100M
+Preferred return (8% × 5 years, simplified): $46.9M total accrued
+
+Tier 1: LPs get $100M back (return of capital)
+Tier 2: LPs get $46.9M preferred return
+Tier 3: GP catch-up: 20% of ($100M + $46.9M) = $29.4M; GP gets 20% / 80% = GP gets ~$3.7M
+Tier 4: Remaining proceeds split 80/20
+
+If fund returned only $120M total: LPs only receive return of capital + partial preferred return. GP gets zero carry.</div>
+
+<div class="gold-box"><strong>Key Concept:</strong> Carry is only paid on <em>profits</em> above the hurdle. If the fund returns less than the preferred return threshold, the GP earns zero carried interest. This is why carry is a true incentive — the GP wins only when LPs win.</div>
+</div>
+<div class="content-panel" id="panel-3-1">
+<div class="page-title">European Waterfall — Fund-as-a-Whole Model</div>
+<p>The European waterfall is the most LP-friendly carry structure. It requires that the GP return <strong>all LP capital across the entire fund</strong> — including capital used to fund losing investments — before any carry is paid. ILPA endorses this model as best practice.</p>
+
+<div class="section-title">How European Waterfall Works</div>
+<div class="info-box">
+<strong>Key Principle:</strong> The fund is evaluated as one pool. Carry is only paid after:<br>
+(1) ALL LP contributed capital is returned (including from failed deals)<br>
+(2) ALL LPs have received their preferred return (8% p.a.) on ALL invested capital<br>
+<br>
+This means early successful exits do NOT trigger carry — the GP must wait until the hurdle is met fund-wide.
+</div>
+
+<div class="formula">European Waterfall — Full Example:
+Fund Size: $200M LP committed capital
+
+Investments:
+  Deal A: $60M invested → $90M exit (+$30M gain)
+  Deal B: $40M invested → $0 (complete loss)
+  Deal C: $80M invested → $140M exit (+$60M gain)
+Total invested: $180M | Total returned: $230M | Net gain: $50M
+
+Step 1 — Return ALL contributed capital:
+  LPs contributed: $200M (includes fees funded via capital calls)
+  Must return full $200M before any carry
+
+Step 2 — Preferred return (8% × ~5 years, compounded):
+  Approximate preferred return accrued: $46.9M
+
+Step 3 — Carry trigger:
+  Total to LPs before carry: $200M + $46.9M = $246.9M
+  Total fund proceeds: $230M
+  In this example: proceeds < hurdle threshold → GP earns ZERO carry
+
+Modified example: Total returned = $280M
+  Carry pool = $280M − $246.9M = $33.1M
+  GP catch-up and carry: 20% of ($46.9M + $33.1M) = ~$16M GP carry</div>
+
+<div class="section-title">Why LPs Prefer European Waterfall</div>
+<ul>
+<li>No early carry payments on winning deals while losing deals still exist</li>
+<li>Eliminates most clawback risk (carry only paid when mathematically due)</li>
+<li>Entire fund must succeed — GP incentivized to manage all deals, not just early winners</li>
+<li>ILPA-endorsed: preferred by institutional LPs globally</li>
+</ul>
+
+<div class="section-title">Where It's Used</div>
+<p>Dominant in <strong>European institutional PE funds</strong>, common in large global buyout funds, and increasingly adopted by US funds with sophisticated LP bases. The name "European" reflects its origin and prevalence in European markets, not a geographic restriction.</p>
+
+<div class="gold-box"><strong>Remember:</strong> European waterfall = <strong>whole-of-fund</strong> carry. The GP waits. LPs protected first. This is now the institutional standard.</div>
+</div>
+<div class="content-panel" id="panel-3-2">
+<div class="page-title">American Waterfall — Deal-by-Deal Model</div>
+<p>The American waterfall pays carry on a <strong>per-deal basis</strong> — as each investment is exited profitably, the GP may receive carried interest on that deal's profits without waiting for the fund as a whole to return all capital.</p>
+
+<div class="section-title">How American Waterfall Works</div>
+<div class="formula">Deal-by-Deal Waterfall — Example:
+Deal A: $60M invested → $90M exit
+
+Step 1: Return $60M capital on Deal A to LPs
+Step 2: Preferred return on $60M × 8% × hold period (e.g., 3 years) = ~$15.2M
+Step 3: GP catch-up and carry on Deal A's profits
+
+Carry pool (Deal A): $90M − $60M − $15.2M = $14.8M
+GP carry (20%): ~$2.96M paid NOW, before other deals exit
+
+Later: Deal B loses $40M
+Now LPs have: [$90M return - $60M capital - $15.2M pref] after Deal A = $14.8M gain
+But also $40M loss on Deal B
+Net to LPs: $14.8M gain - $40M loss = net loss!
+
+GP has already received $2.96M carry — this triggers CLAWBACK.</div>
+
+<div class="section-title">Clawback Mechanism</div>
+<p>Because carry can be paid on winning deals before losing deals are known, the GP may receive more carry than it's entitled to on a fund-as-a-whole basis. The <strong>clawback provision</strong> requires the GP to return excess carry at fund wind-down.</p>
+<div class="formula">Clawback Amount = Carry Received − Carry Earned (whole-of-fund basis)
+
+Key complications:
+1. Tax: GP may have paid income tax on carry received → LPA often requires gross-up
+2. Timing: Clawback only calculated at fund termination (may be 10+ years later)
+3. GP solvency: What if the GP or individual carry recipients can't pay?
+4. Escrow: LPs often negotiate carry escrow (20–30% held back) to secure clawback</div>
+
+<div class="section-title">Comparison: European vs. American</div>
+<table class="comp-table">
+<tr><th>Feature</th><th>European (Whole-of-Fund)</th><th>American (Deal-by-Deal)</th></tr>
+<tr><td>Carry timing</td><td>After full fund return + hurdle</td><td>After each deal's hurdle</td></tr>
+<tr><td>Clawback risk</td><td>Very low</td><td>High (potential for significant clawback)</td></tr>
+<tr><td>GP cash flow</td><td>Later, larger lump sum</td><td>Earlier, incremental</td></tr>
+<tr><td>LP protection</td><td>Maximum — all capital returned first</td><td>Lower — early carry before portfolio is known</td></tr>
+<tr><td>Clawback escrow</td><td>Rarely needed</td><td>Often required (20–30%)</td></tr>
+<tr><td>ILPA stance</td><td>Endorsed (preferred)</td><td>Discouraged for new funds</td></tr>
+<tr><td>Current prevalence</td><td>Dominant globally</td><td>Declining; mostly legacy US funds</td></tr>
+</table>
+
+<div class="warn-box"><strong>Important:</strong> "American waterfall" does NOT mean all US funds use it. Most modern US buyout funds now use European (whole-of-fund) waterfall. "American" is a historical label for the deal-by-deal structure.</div>
+</div>
+<div class="content-panel" id="panel-3-3">
+<div class="page-title">Accounting for Carried Interest</div>
+<p>How carry is recognized in the fund's books depends on whether it has been <strong>earned</strong> (based on current NAV) or <strong>paid</strong> (actual cash distribution to GP).</p>
+
+<div class="section-title">Accrued Carried Interest (Unrealized)</div>
+<p>Under ASC 946, accrued carry is typically recognized as an allocation of partners' capital when it is attributable based on current NAV — even before cash is distributed. This is known as the <strong>"catch-up" allocation approach</strong> or the <strong>income allocation approach</strong>.</p>
+<div class="formula">GP's carry allocation in financial statements:
+If current NAV and distributions, when taken together, would trigger carry payment,
+allocate the carry portion to the GP capital account:
+
+DR  Partners' Capital — LPs (carry re-allocation)     $X
+  CR  Partners' Capital — GP (accrued carry)           $X</div>
+
+<div class="section-title">Two Schools of Thought on Carry Presentation</div>
+<table class="comp-table">
+<tr><th>Method</th><th>Description</th><th>Common Usage</th></tr>
+<tr><td><strong>Capital Account Method</strong></td><td>Carry is an allocation to GP capital account (no separate expense line). It reclassifies partners' capital from LPs to GP.</td><td>Most US PE funds</td></tr>
+<tr><td><strong>Expense Method</strong></td><td>Carry is shown as an incentive fee expense on the income statement before calculating net income attributable to LPs.</td><td>Some hedge funds; rare in PE</td></tr>
+</table>
+
+<div class="section-title">Clawback Liability</div>
+<p>If carry has been paid (cash out the door) but the fund's performance subsequently deteriorates, the GP may have a clawback obligation. This should be disclosed in the financial statement notes and may require a contingent liability accrual if the clawback is probable and estimable.</p>
+
+<div class="section-title">Carry Escrow</div>
+<p>Many LPAs require a <strong>carried interest escrow</strong> — typically 20–30% of carry distributions are held in escrow until fund wind-down to protect LPs against clawback. From an accounting perspective:</p>
+<div class="formula">On carry payment with escrow:
+DR  Partners' Capital — GP                           $2,000,000  [total carry]
+  CR  Cash (distributed to GP)                        $1,600,000  [80%]
+  CR  Escrow Holdback Payable / Restricted Cash          $400,000  [20% escrowed]</div>
+
+<div class="section-title">GP Commit vs. Carry — Don't Confuse Them</div>
+<div class="info-box">
+<strong>GP Capital Commitment:</strong> The GP's pro-rata investment in the fund (1–3%). This is co-investment capital, just like LP capital. It earns returns and bears losses proportionally.<br><br>
+<strong>Carried Interest:</strong> The additional profit allocation (20%) earned by the GP for managing the fund successfully. This is separate from GP co-invest returns.<br><br>
+A GP capital account combines both components — GP co-invest NAV + accrued carry.
+</div>
+</div>
+<div class="content-panel" id="panel-3-4">
+<div class="page-title">Clawback Provisions — Protecting LP Returns</div>
+<p>A clawback is the GP's contractual obligation to return previously distributed carry to LPs if, at the end of the fund's life, the GP has received more carry than it was entitled to on a fund-as-a-whole basis.</p>
+
+<div class="section-title">When Does Clawback Occur?</div>
+<p>Clawback arises when:</p>
+<ul>
+<li>Early exits generate profits → carry paid to GP</li>
+<li>Later investments lose money → overall fund returns fall below hurdle</li>
+<li>Result: GP received carry it wasn't mathematically entitled to</li>
+</ul>
+<p>This is most common in American (deal-by-deal) waterfall funds. European waterfall funds almost never trigger clawback because carry is only paid after the full fund hurdle is met.</p>
+
+<div class="section-title">Clawback Calculation Example</div>
+<div class="formula">Fund total LP capital contributed: $100M
+Preferred return (8% × 5yr): $46.9M
+Total LP return needed before any GP profit: $146.9M
+
+Total fund distributions to LPs + GP: $160M
+Total carry paid to GP during fund life: $8M
+Total distributed to LPs: $152M
+
+Was LP hurdle met?
+$152M vs. required $146.9M → LPs received MORE than hurdle → No clawback needed
+
+Modified: LPs only received $140M
+Shortfall: $146.9M − $140M = $6.9M
+GP must return min($8M carry, $6.9M shortfall) = $6.9M clawback due to LPs</div>
+
+<div class="section-title">Clawback Complications</div>
+<ul>
+<li><strong>Tax gross-up:</strong> GP paid income tax on carry received. LPA may require GP to return pre-tax amount (effectively reimbursing tax already paid). LPs in different tax positions may benefit differently.</li>
+<li><strong>Individual vs. fund-level:</strong> Carry is often paid to individual deal team members. If the fund claws back, individual professionals must return personally received carry — a significant personal financial burden.</li>
+<li><strong>Solvency risk:</strong> 10 years after carry was paid, can the GP or individuals actually return it? Carry escrow mitigates this.</li>
+<li><strong>Legal disputes:</strong> Clawback calculations can be complex and contested. Legal fees can erode the amount actually returned.</li>
+</ul>
+
+<div class="section-title">Escrow as Mitigation</div>
+<p>The most effective protection is a carry escrow: the fund holds back 20–30% of each carry payment until fund wind-down. If clawback is due, it comes from escrow first. ILPA recommends carry escrow be required in all LPAs.</p>
+</div>
+<div class="content-panel" id="panel-4-0">
+<div class="page-title">Core Performance Metrics — IRR &amp; MOIC</div>
+<p>PE performance is measured using a small set of standard metrics that every fund reports to LPs. Understanding these metrics — how they are calculated, their strengths, and their limitations — is essential for any PE accountant.</p>
+
+<div class="section-title">IRR — Internal Rate of Return</div>
+<p>IRR is the annualized rate of return that makes the Net Present Value (NPV) of all cash flows (in and out) equal to zero. It accounts for the <strong>time value of money</strong> — a dollar returned in Year 1 is more valuable than a dollar returned in Year 5.</p>
+<div class="formula">NPV = 0 = Σ [CF_t / (1 + IRR)^t]
+
+where CF_t = cash flow at time t
+      Negative = capital calls (money out from LP perspective)
+      Positive = distributions (money back to LP)
+
+Example:
+Year 0: −$1,000,000 (LP capital called)
+Year 1: −$500,000 (additional call)
+Year 3: +$800,000 (partial distribution)
+Year 5: +$2,000,000 (exit distribution)
+
+Solve for IRR: approximately 22.4% per year</div>
+
+<div class="section-title">XIRR vs. IRR</div>
+<p>Standard IRR assumes regular periodic cash flows. PE cash flows are irregular (random dates). <strong>XIRR</strong> handles actual calendar dates — it is the correct calculation for PE.</p>
+<div class="formula">XIRR in Excel:
+=XIRR(values, dates)
+=XIRR({-1000000, -500000, 800000, 2000000}, 
+       {1/1/2020, 6/15/2020, 3/20/2022, 9/30/2024})
+
+Always use XIRR for PE. Standard IRR gives incorrect results when cash flows are irregular.</div>
+
+<div class="section-title">MOIC — Multiple on Invested Capital</div>
+<p>MOIC (also called TVPI — Total Value to Paid-In) is a simple multiple: how many times the LP's money has been returned. It does NOT account for time value of money.</p>
+<div class="formula">MOIC = TVPI = (Distributions + Remaining NAV) / Total Capital Contributed
+
+Example:
+Total capital called: $100M
+Distributions paid: $80M
+Remaining NAV: $60M
+MOIC = ($80M + $60M) / $100M = 1.40×
+
+Interpretation: LPs have gotten back 1.40× their money so far (realized + unrealized)</div>
+
+<div class="section-title">IRR vs. MOIC — Use Both</div>
+<table class="comp-table">
+<tr><th>Scenario</th><th>IRR</th><th>MOIC</th><th>Lesson</th></tr>
+<tr><td>$1M → $2M in 1 year</td><td>100%</td><td>2.0×</td><td>High IRR, low absolute gain</td></tr>
+<tr><td>$1M → $2M in 5 years</td><td>15%</td><td>2.0×</td><td>Same MOIC, much lower IRR</td></tr>
+<tr><td>$100M → $200M in 5 years</td><td>15%</td><td>2.0×</td><td>Same ratios, 100× more dollars</td></tr>
+<tr><td>$100M → $400M in 10 years</td><td>15%</td><td>4.0×</td><td>Low IRR, great MOIC</td></tr>
+</table>
+<div class="gold-box"><strong>Rule of Thumb:</strong> IRR tells you speed; MOIC tells you magnitude. You need both. A 50% IRR on $1M over 6 months is less impressive than a 20% IRR on $500M over 7 years.</div>
+</div>
+<div class="content-panel" id="panel-4-1">
+<div class="page-title">DPI, RVPI &amp; TVPI — Return Multiples</div>
+<p>These three ratios are components of the same performance story: how much of a fund's value is realized (cash in hand) vs. unrealized (paper gains).</p>
+
+<div class="section-title">The Three Multiples</div>
+
+<div class="sub-title">DPI — Distributions to Paid-In</div>
+<div class="formula">DPI = Total Distributions / Total Capital Called (Paid-In Capital)
+
+DPI measures what LPs have actually received in cash.
+DPI = 1.0× means LPs got their money back
+DPI > 1.0× means LPs are in profit on a cash basis</div>
+
+<div class="sub-title">RVPI — Residual Value to Paid-In</div>
+<div class="formula">RVPI = Remaining NAV / Total Capital Called
+
+RVPI measures the unrealized value still in the fund.
+Early in fund life: RVPI is high, DPI is low
+Late in fund life: RVPI should be declining as exits occur</div>
+
+<div class="sub-title">TVPI — Total Value to Paid-In</div>
+<div class="formula">TVPI = DPI + RVPI = (Distributions + NAV) / Paid-In Capital
+This is the same as MOIC.</div>
+
+<div class="section-title">Reading the Multiples Together</div>
+<table class="comp-table">
+<tr><th>DPI</th><th>RVPI</th><th>TVPI</th><th>Interpretation</th></tr>
+<tr><td>0.0×</td><td>1.3×</td><td>1.3×</td><td>Early-stage fund — all paper gains, no cash returned</td></tr>
+<tr><td>0.8×</td><td>0.9×</td><td>1.7×</td><td>Mid-life fund — some exits, healthy unrealized</td></tr>
+<tr><td>1.8×</td><td>0.3×</td><td>2.1×</td><td>Mature fund — mostly realized, small remainder</td></tr>
+<tr><td>2.2×</td><td>0.0×</td><td>2.2×</td><td>Fully harvested fund — 100% realized</td></tr>
+<tr><td>0.6×</td><td>0.5×</td><td>1.1×</td><td>Underperforming fund — below hurdle, no carry likely</td></tr>
+</table>
+
+<div class="section-title">Paid-In Capital (the Denominator)</div>
+<p>Paid-In Capital (PIC) is total LP capital actually called and funded — not the total commitment. This distinction matters:</p>
+<div class="formula">Total LP Commitment: $200M
+Paid-In Capital (cumulative calls): $175M
+Unfunded: $25M
+
+Multiples use $175M (Paid-In), not $200M (Commitment)
+Using the wrong denominator is a common error in LP reporting</div>
+
+<div class="section-title">Gross vs. Net Returns</div>
+<table class="comp-table">
+<tr><th>Metric</th><th>Description</th><th>Who It Matters To</th></tr>
+<tr><td>Gross IRR / Gross MOIC</td><td>Before management fees and carry</td><td>GP — shows investment skill</td></tr>
+<tr><td>Net IRR / Net MOIC</td><td>After management fees and carry, from LP perspective</td><td>LPs — actual return received</td></tr>
+</table>
+<div class="warn-box"><strong>Never confuse gross and net returns.</strong> A fund might show 25% gross IRR but 18% net IRR after fees and carry. LPs evaluate net returns. Always label clearly which basis you're using.</div>
+</div>
+<div class="content-panel" id="panel-4-2">
+<div class="page-title">Performance Reporting &amp; Benchmarks</div>
+
+<div class="section-title">Benchmark Types for PE</div>
+<p>Measuring PE fund performance against a relevant benchmark helps LPs evaluate manager skill (alpha) vs. market beta.</p>
+<table class="comp-table">
+<tr><th>Benchmark Type</th><th>Description</th><th>Provider</th></tr>
+<tr><td>Cambridge Associates</td><td>PE fund database returns by vintage year and strategy</td><td>Cambridge Associates</td></tr>
+<tr><td>Preqin</td><td>Broad PE benchmark database, quartile rankings</td><td>Preqin</td></tr>
+<tr><td>Public Market Equivalent (PME)</td><td>Compares PE cash flows against a public index (S&amp;P 500, Russell 2000)</td><td>Constructed by LP/GP</td></tr>
+<tr><td>Direct Alpha</td><td>IRR of excess returns over public market benchmark</td><td>Cambridge/academic</td></tr>
+<tr><td>Vintage Year Peer Group</td><td>Compare to funds of same vintage year and strategy</td><td>Various databases</td></tr>
+</table>
+
+<div class="section-title">Public Market Equivalent (PME)</div>
+<p>PME answers: "If LPs had invested their cash flows into the S&P 500 instead of this PE fund, what would they have earned?" It is the most rigorous comparison of PE vs. liquid alternatives.</p>
+<div class="formula">Kaplan-Schoar PME:
+PME = (Value of Distributions in Index Terms + NAV in Index Terms)
+      / (Value of Contributions in Index Terms)
+
+PME > 1.0: PE fund outperformed public index
+PME < 1.0: Public market would have been better
+PME = 1.0: Exactly matched public market</div>
+
+<div class="section-title">Financial Highlights Disclosure</div>
+<p>Under ASC 946, investment companies are required to disclose financial highlights in their financial statements. For PE funds, this typically includes:</p>
+<ul>
+<li>Per-unit (or per-interest) data: contributions, distributions, change in NAV</li>
+<li>Total return (IRR at the fund level)</li>
+<li>Ratios: expense ratio (fund-level expenses / average NAV)</li>
+</ul>
+
+<div class="section-title">J-Curve Effect</div>
+<p>PE fund returns typically show a characteristic pattern known as the J-Curve:</p>
+<div class="info-box">
+<strong>Years 1–3 (Investment Period):</strong> IRR is negative or low. Capital is deployed (cash out), management fees reduce NAV, early investments haven't yet appreciated.<br><br>
+<strong>Years 4–6 (Value Creation):</strong> Unrealized appreciation builds as portfolio companies grow. IRR turns positive.<br><br>
+<strong>Years 7–10 (Harvest Period):</strong> Exits generate realized cash distributions. DPI rises. IRR converges to final return.<br><br>
+This J-curve shape is why early-vintage IRRs are not comparable to mature fund IRRs.
+</div>
+</div>
+<div class="content-panel" id="panel-5-0">
+<div class="page-title">ILPA Reporting Standards</div>
+<p>The <strong>Institutional Limited Partners Association (ILPA)</strong> is the primary industry body representing LP interests. ILPA has published standardized reporting templates and principles that have become the de facto global standard for PE fund reporting.</p>
+
+<div class="section-title">ILPA Principles Overview</div>
+<p>ILPA's three core principles for PE fund governance:</p>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Alignment of Interest</strong><br>GP and LP economics should be structured so both benefit from fund success. Includes GP co-investment requirements (1–3%), management fee offsets, fair hurdle rates, and European waterfall.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>Governance</strong><br>LPs should have meaningful oversight rights: LP Advisory Committee (LPAC), key man provisions, no-fault divorce right, audited financials, independent valuation processes.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>Transparency</strong><br>GPs should provide comprehensive, timely reporting using standardized templates. No hidden fees, clear disclosure of all GP economics.</div></div>
+</div>
+
+<div class="section-title">ILPA Reporting Templates</div>
+<p>ILPA has developed standardized templates that GPs are encouraged (and increasingly required by LPs) to use:</p>
+<table class="comp-table">
+<tr><th>Template</th><th>Frequency</th><th>Content</th></tr>
+<tr><td>Capital Account Statement</td><td>Quarterly</td><td>LP-specific NAV, contributions, distributions, performance</td></tr>
+<tr><td>Fee Reporting Template</td><td>Quarterly/Annual</td><td>All fees paid: management fees, deal fees, monitoring fees, carry</td></tr>
+<tr><td>Portfolio Company Reporting</td><td>Quarterly</td><td>Portfolio company metrics: revenue, EBITDA, leverage, headcount</td></tr>
+<tr><td>Quarterly Fund Summary</td><td>Quarterly</td><td>Fund-level performance, capital activity, portfolio summary</td></tr>
+</table>
+
+<div class="section-title">LP Advisory Committee (LPAC)</div>
+<p>The LPAC is a subset of major LPs who represent the LP community in governance matters. The LPAC reviews and approves:</p>
+<ul>
+<li>Conflicts of interest (GP investing alongside the fund, related-party transactions)</li>
+<li>Fund extensions beyond the stated term</li>
+<li>Material valuation matters</li>
+<li>Key man events and remediation plans</li>
+<li>Any waivers of LPA provisions</li>
+</ul>
+<div class="gold-box"><strong>Career Tip:</strong> Understanding what the LPAC approves helps you recognize which accounting matters require escalation. If you're involved in a related-party transaction or a significant valuation disagreement, the LPAC is likely involved.</div>
+</div>
+<div class="content-panel" id="panel-5-1">
+<div class="page-title">Capital Account Statements — LP Reporting</div>
+<p>The capital account statement is the most important document you will produce for LPs. Each LP receives a statement showing their individual position in the fund — contributions, distributions, and current NAV.</p>
+
+<div class="section-title">ILPA Capital Account Statement — Key Sections</div>
+
+<div class="sub-title">Section 1: Commitment Summary</div>
+<div class="formula">LP Name: Teachers' Pension Plan
+Fund: Maple Capital Partners IV, L.P.
+
+Total Commitment:                     $25,000,000
+Total Funded (Paid-In Capital):       $20,000,000
+Unfunded Commitment:                   $5,000,000
+Funded % of Commitment:                     80.0%</div>
+
+<div class="sub-title">Section 2: Capital Account Activity (Inception to Date)</div>
+<div class="formula">Beginning Capital Account (Inception):              $0
+Contributions:                          $20,000,000
+Allocated Net Investment Income (Loss):   ($850,000)
+Allocated Net Realized Gain:            $4,200,000
+Allocated Net Unrealized Appreciation:  $3,100,000
+Distributions:                         ($8,500,000)
+Ending Capital Account Balance:        $17,950,000</div>
+
+<div class="sub-title">Section 3: Distribution Detail</div>
+<table class="comp-table">
+<tr><th>Date</th><th>Type</th><th>Amount</th><th>Source</th></tr>
+<tr><td>03/15/2023</td><td>Return of Capital</td><td>$2,000,000</td><td>Exit — Company A</td></tr>
+<tr><td>03/15/2023</td><td>Realized Gain</td><td>$1,200,000</td><td>Exit — Company A</td></tr>
+<tr><td>09/20/2023</td><td>Return of Capital</td><td>$3,000,000</td><td>Exit — Company B</td></tr>
+<tr><td>09/20/2023</td><td>Realized Gain</td><td>$2,300,000</td><td>Exit — Company B</td></tr>
+</table>
+
+<div class="sub-title">Section 4: Performance Metrics</div>
+<div class="formula">Net IRR (inception to date):                  18.4%
+DPI (Distributions / Paid-In):                 0.43×
+RVPI (Remaining NAV / Paid-In):                0.90×
+TVPI (Total Value / Paid-In):                  1.33×</div>
+
+<div class="section-title">Common Errors in Capital Account Statements</div>
+<ul>
+<li>Wrong allocation percentages — use the LPA's specified method, not a simple pro-rata</li>
+<li>Missing capital call adjustments — some LPs have different call dates (affects preferred return)</li>
+<li>Forgetting to show GP carry as a separate allocation line</li>
+<li>Distribution characterization errors — LPs need to know RoC vs. gain for tax purposes</li>
+<li>Inception-to-date vs. period amounts confused</li>
+</ul>
+</div>
+<div class="content-panel" id="panel-5-2">
+<div class="page-title">Capital Calls &amp; Distributions — Mechanics</div>
+
+<div class="section-title">Capital Call Process</div>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Notice to LPs</strong><br>GP issues capital call notice (typically 10 business days before funding date). Notice includes: dollar amount for each LP, purpose (investment, fees, expenses), funding date and wire instructions.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>LP Funding</strong><br>LPs wire their pro-rata share to the fund's bank account. Pro-rata = LP's commitment as % of total fund commitments (or per LPA).</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>Accounting Entry</strong><br>Debit Cash / Credit Partners' Capital for each LP. Update each LP's capital account and unfunded commitment balance.</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><strong>Deployment</strong><br>Funds wired to target company or used for management fees, as specified in the call notice. Subsequent entries record the investment or expense.</div></div>
+</div>
+
+<div class="section-title">Capital Call — Accounting in Detail</div>
+<div class="formula">Fund has 3 LPs with pro-rata shares: LP A = 60%, LP B = 30%, LP C = 10%
+Capital Call: $5,000,000 for new investment
+
+Journal Entry:
+DR  Cash                       $5,000,000
+  CR  Partners' Capital — LP A   $3,000,000  [60%]
+  CR  Partners' Capital — LP B   $1,500,000  [30%]
+  CR  Partners' Capital — LP C     $500,000  [10%]
+
+On deployment (purchase of Company X):
+DR  Investment — Company X     $4,900,000
+DR  Legal/Transaction Costs       $100,000
+  CR  Cash                       $5,000,000</div>
+
+<div class="section-title">Distribution Process</div>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Trigger Event</strong><br>Portfolio company exits (sale, IPO, dividend recapitalization). GP receives proceeds in fund's bank account.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>Waterfall Calculation</strong><br>Finance team calculates the waterfall (per LPA) to determine how proceeds are split between return of capital, preferred return, GP catch-up, and LP/GP carry split.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>Distribution Notice</strong><br>GP issues distribution notice to LPs showing: total proceeds, each LP's share, allocation between RoC and gain (important for LP tax reporting).</div></div>
+<div class="step"><div class="step-num">4</div><div class="step-body"><strong>Wire &amp; Book</strong><br>GP wires each LP's distribution. Accounting entry: Debit Partners' Capital / Credit Cash per LP.</div></div>
+</div>
+
+<div class="section-title">In-Kind Distributions</div>
+<p>Sometimes a fund distributes shares rather than cash (e.g., after a portfolio company IPO). These <strong>in-kind distributions</strong> require fair value measurement at the distribution date.</p>
+<div class="formula">In-Kind Distribution — Example:
+Portfolio company IPO: shares now publicly traded
+Fund distributes 100,000 shares to LPs
+Share price at distribution date: $45.00
+FV of distribution: $4,500,000
+
+DR  Partners' Capital — LPs          $4,500,000
+  CR  Investments at Fair Value        $4,500,000
+  [Remove investment; LPs now hold shares directly]
+
+Note: If FV differs from cost, realize the gain/loss first, then distribute at FV.</div>
+</div>
+<div class="content-panel" id="panel-5-3">
+<div class="page-title">K-1 &amp; Tax Reporting for PE Funds</div>
+<p>US PE funds organized as limited partnerships are <strong>pass-through entities</strong> — the fund itself pays no federal income tax. Instead, income, gains, losses, and deductions flow through to each partner who reports them on their individual tax return.</p>
+
+<div class="section-title">Form 1065 — Partnership Tax Return</div>
+<p>The fund files <strong>Form 1065</strong> annually with the IRS. This return reports the fund's total income, gains, losses, deductions, and credits. Each partner receives a <strong>Schedule K-1</strong> showing their allocable share.</p>
+
+<div class="section-title">Schedule K-1 — Key Line Items</div>
+<table class="comp-table">
+<tr><th>K-1 Line</th><th>Description</th><th>Tax Treatment for LP</th></tr>
+<tr><td>Box 1</td><td>Ordinary business income (loss)</td><td>Ordinary income rates (up to 37%)</td></tr>
+<tr><td>Box 2</td><td>Net rental real estate income</td><td>Passive activity rules apply</td></tr>
+<tr><td>Box 5</td><td>Interest income</td><td>Ordinary income</td></tr>
+<tr><td>Box 6</td><td>Dividend income (qualified)</td><td>Preferential rate (0/15/20%)</td></tr>
+<tr><td>Box 9a</td><td>Long-term capital gain</td><td>Long-term capital gain rates (0/15/20%)</td></tr>
+<tr><td>Box 9c</td><td>Unrecaptured Sec. 1250 gain</td><td>Max 25%</td></tr>
+<tr><td>Box 13</td><td>Other deductions (management fees)</td><td>Deductible per LP's situation</td></tr>
+<tr><td>Box 20</td><td>Other information (UBTI, ECI)</td><td>Critical for tax-exempt LPs</td></tr>
+</table>
+
+<div class="section-title">Tax vs. GAAP Differences</div>
+<p>The fund maintains <strong>two sets of books</strong>: GAAP (for financial statements) and tax (for Form 1065 and K-1s). Key differences:</p>
+<table class="comp-table">
+<tr><th>Item</th><th>GAAP (ASC 946)</th><th>Tax</th></tr>
+<tr><td>Unrealized gains</td><td>Recognized in income each period</td><td>NOT recognized until realized</td></tr>
+<tr><td>Investment income</td><td>Accrual basis</td><td>Generally cash or accrual per entity</td></tr>
+<tr><td>Carried interest</td><td>Capital allocation in GAAP</td><td>Potentially Section 1061 3-year hold rule</td></tr>
+<tr><td>Transaction costs</td><td>Typically expensed</td><td>May be capitalized or amortized</td></tr>
+</table>
+
+<div class="section-title">UBTI — Unrelated Business Taxable Income</div>
+<p>Tax-exempt LPs (pension funds, endowments) are generally not taxable on investment income. However, <strong>UBTI</strong> — income from businesses "unrelated" to their exempt purpose — may be taxable. UBTI typically arises from:</p>
+<ul>
+<li>Debt-financed investments (through leverage at the fund or portfolio company level)</li>
+<li>Operating business income (e.g., portfolio companies that generate "active" income)</li>
+</ul>
+<p>Tax-exempt LPs carefully track UBTI exposure. Many use offshore blockers (Cayman subsidiaries) to shield UBTI.</p>
+
+<div class="section-title">ECI — Effectively Connected Income</div>
+<p>Non-US LPs may be subject to US tax on <strong>ECI</strong> — income effectively connected with a US trade or business. This is particularly relevant for funds with US portfolio companies. Non-US LPs often invest through "blocker" vehicles to avoid ECI exposure.</p>
+
+<div class="gold-box"><strong>Career Tip:</strong> Tax is a specialized area. PE fund accounting teams work closely with tax advisors and fund administrators on K-1 preparation. Understanding the GAAP-to-tax reconciliation and LP-specific tax concerns (UBTI, ECI) makes you a more valuable team member.</div>
+</div>
+<div class="content-panel" id="panel-6-0">
+<div class="page-title">Income &amp; Loss Allocation Methods</div>
+<p>Allocating the fund's income, gains, losses, and expenses to individual LP capital accounts is one of the most technically demanding areas of PE fund accounting. The allocation method must follow the LPA and be applied consistently.</p>
+
+<div class="section-title">Target Capital Account Method</div>
+<p>The most commonly used method for PE funds. Each LP's capital account should always reflect what they would receive if the fund were liquidated at current fair values — based on the LPA's distribution waterfall.</p>
+<div class="formula">Step 1: Determine what each partner SHOULD have in their capital account
+        if the fund were liquidated at current FV values
+        (run the waterfall calculation with current NAV)
+
+Step 2: Calculate the required change to get from current balance to target:
+        Allocation = Target Capital Account − Current Capital Account
+
+Step 3: Book that difference as the period's income/loss allocation
+
+This ensures capital accounts always track the waterfall at every reporting date.</div>
+
+<div class="section-title">Pro-Rata Method</div>
+<p>Simpler approach: allocate all income and loss based on each partner's percentage ownership (their capital commitment as a % of total). This works well when there are no complex waterfall features (no carry, no multiple LP classes).</p>
+<div class="formula">Pro-Rata Allocation:
+LP A: 60% commitment → receives 60% of all income/loss/expenses
+LP B: 30% commitment → receives 30%
+GP: 10% commitment → receives 10%
+
+Limitation: Doesn't handle carry, preferred return, or different LP terms correctly.</div>
+
+<div class="section-title">Layered Allocation Approach</div>
+<p>When there are multiple LP classes (Class A, Class B) with different fee rates or carry rates, allocation happens in layers:</p>
+<div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-body"><strong>Class-Specific Allocations</strong><br>Items that belong specifically to one class (class-specific management fees, carry allocations for that class) are allocated only to that class.</div></div>
+<div class="step"><div class="step-num">2</div><div class="step-body"><strong>Common Pool Allocation</strong><br>Remaining income/loss shared among all classes in proportion to their capital account balances.</div></div>
+<div class="step"><div class="step-num">3</div><div class="step-body"><strong>True-Up at Year-End</strong><br>Run the full waterfall calculation to verify each LP's capital account matches their liquidation entitlement. Adjust if needed.</div></div>
+</div>
+
+<div class="section-title">Allocation of Specific Items</div>
+<table class="comp-table">
+<tr><th>Income/Expense Item</th><th>Typical Allocation Treatment</th></tr>
+<tr><td>Management fees</td><td>Allocated to LPs only (GP does not pay management fees on its own commitment in many funds)</td></tr>
+<tr><td>Fund expenses (audit, legal)</td><td>Pro-rata to all partners including GP</td></tr>
+<tr><td>Unrealized appreciation</td><td>Pro-rata first, then adjusted for carry accrual</td></tr>
+<tr><td>Realized gains</td><td>Through waterfall (return of capital, pref return, catch-up, 80/20 split)</td></tr>
+<tr><td>Interest income</td><td>Usually pro-rata to all partners</td></tr>
+<tr><td>Carried interest</td><td>Allocated to GP capital account only</td></tr>
+</table>
+
+<div class="warn-box"><strong>Common Mistake:</strong> Allocating management fees to the GP's capital account. In most LPAs, the GP is exempt from management fees on its co-invest. Always check the LPA — this detail varies by fund.</div>
+</div>
+<div class="content-panel" id="panel-6-1">
+<div class="page-title">Management Fee Calculations</div>
+<p>Management fees are the GP's primary source of operating revenue during the fund's life. They are calculated based on the LPA's specified rate and fee base, and they must be precisely tracked for LP reporting.</p>
+
+<div class="section-title">Standard Management Fee Structure</div>
+<table class="comp-table">
+<tr><th>Fund Period</th><th>Typical Fee Base</th><th>Typical Rate</th></tr>
+<tr><td>Investment Period (Years 1–5)</td><td>Total LP committed capital</td><td>1.5–2.0% per year</td></tr>
+<tr><td>Post-Investment Period (Years 6+)</td><td>Net invested capital (cost basis of remaining investments)</td><td>1.0–1.5% per year</td></tr>
+</table>
+
+<div class="section-title">Fee Base Calculation Examples</div>
+<div class="formula">Investment Period:
+Fund size: $500M total commitments
+Management fee rate: 2.0%
+Annual fee: $500M × 2.0% = $10,000,000
+Quarterly fee: $10,000,000 / 4 = $2,500,000
+
+Post-Investment Period:
+Net invested cost basis of remaining portfolio: $180M
+Management fee rate: 1.5%
+Annual fee: $180M × 1.5% = $2,700,000
+Quarterly fee: $675,000
+
+This "step-down" reduces the fee as the portfolio winds down and reflects reduced workload.</div>
+
+<div class="section-title">Fee Offsets</div>
+<p>Many LPAs require that transaction fees, monitoring fees, and deal fees earned by the GP from portfolio companies be used to offset (reduce) management fees. This is a key LP protection.</p>
+<div class="formula">Management fee calculation with offset:
+Gross management fee:              $2,500,000
+Monitoring fees received (50% offset): ($300,000)
+Net management fee payable:        $2,200,000
+
+Typical offset: 50–100% of portfolio company fees credited against management fee.
+100% offset → all deal fees reduce management fee (most LP-friendly)
+0% offset → deal fees are pure GP revenue in addition to management fee (GP-friendly)</div>
+
+<div class="section-title">Management Fee vs. Fund Expenses</div>
+<p>The management fee is NOT the only cost to the fund. LPs bear additional <strong>fund-level expenses</strong>:</p>
+<ul>
+<li>Audit fees (annual financial statement audit)</li>
+<li>Tax preparation (Form 1065, K-1 preparation)</li>
+<li>Legal fees (ongoing fund legal counsel)</li>
+<li>Fund administrator fees (if third-party)</li>
+<li>LP advisory committee expenses</li>
+<li>D&O insurance and fund insurance</li>
+</ul>
+<div class="info-box">Fund expenses are typically capped at 0.1–0.25% of fund size per year. Expenses above the cap are borne by the GP. As accountant, monitor expenses against the cap and flag any overages to the GP.</div>
+</div>
+<div class="content-panel" id="panel-6-2">
+<div class="page-title">Capital Call Mechanics &amp; Recycling</div>
+
+<div class="section-title">How Capital Calls Work in Practice</div>
+<p>When the GP needs capital for a new investment or to cover fund expenses, it issues a capital call notice. Each LP funds their pro-rata share based on their commitment percentage.</p>
+<div class="formula">Example Capital Call:
+GP needs $12,000,000 for new investment + $500,000 quarterly management fee
+Total call: $12,500,000
+
+LP Commitment Percentages:
+  LP A (commitment $100M): 40.0% → $5,000,000
+  LP B (commitment $75M):  30.0% → $3,750,000
+  LP C (commitment $50M):  20.0% → $2,500,000
+  GP (commitment $25M):    10.0% → $1,250,000
+  Total:                  100.0% → $12,500,000</div>
+
+<div class="section-title">Recycling of Capital</div>
+<p><strong>Capital recycling</strong> allows the GP to re-invest early distributions back into new investments, effectively deploying more than the fund's total committed capital over the fund's life. Not all LPAs permit recycling — it must be specifically allowed.</p>
+<div class="formula">Example of recycling:
+Fund commitment: $100M (all called)
+Year 3: Company A exits → $20M returned to LPs as return of capital
+Fund value after exit: $80M in remaining investments
+
+With recycling:
+GP can re-call the $20M returned to fund new investments
+Total deployed over fund life: up to $120M ($100M + $20M recycled)
+
+Without recycling:
+Capital is permanently returned; fund can only invest from original $100M</div>
+
+<div class="section-title">Subscription Lines of Credit</div>
+<p>Many funds use short-term credit facilities (subscription lines, also called "sub lines" or "capital call facilities") to bridge the time between signing a deal and calling capital from LPs. The credit line is secured by unfunded LP commitments.</p>
+<div class="formula">Purpose: Close deals quickly without waiting 10 days for LP capital calls
+Typical term: 90–180 days
+Interest rate: SOFR + 1.5–2.5%
+
+Accounting for sub-line usage:
+On draw:
+DR  Investment / Cash              $15,000,000
+  CR  Subscription Line Payable     $15,000,000
+
+On capital call (LPs fund):
+DR  Cash                           $15,100,000  [principal + interest]
+  CR  Partners' Capital — LPs       $15,000,000
+  CR  Interest Expense                 $100,000
+  [Then repay the line]
+DR  Subscription Line Payable      $15,000,000
+  CR  Cash                          $15,000,000</div>
+
+<div class="warn-box"><strong>IRR Impact:</strong> Subscription lines boost reported IRR because they delay LP capital calls. A fund may show a 3–5% higher IRR by using sub lines compared to calling capital at deal close. LPs increasingly require "unlevered IRR" (calculated from deal date, not call date) to compare funds fairly.</div>
+</div>
+<div class="content-panel" id="panel-7-0">
+<div class="page-title">Consolidation &amp; Investment Entity Exemption</div>
+
+<div class="section-title">The Consolidation Question</div>
+<p>PE funds typically own majority (controlling) stakes in portfolio companies. Under general consolidation principles (ASC 810 / IFRS 10), controlling ownership would require <strong>full consolidation</strong> of portfolio companies into the fund's financial statements. However, this would make PE fund financial statements completely uninterpretable — imagine consolidating 15 different operating companies into one set of financial statements.</p>
+
+<div class="section-title">US GAAP — Investment Company Exception (ASC 946)</div>
+<p>ASC 946-810 provides that entities that qualify as investment companies do <strong>NOT consolidate</strong> their portfolio company investments. Instead, they measure them at <strong>fair value through the income statement</strong>. This exception applies even if the fund owns 100% of a portfolio company.</p>
+<div class="gold-box"><strong>Key Rule:</strong> A PE fund that qualifies as an investment company under ASC 946 is EXEMPT from consolidation requirements of ASC 810. Each portfolio company stays as a line item on the Schedule of Investments at fair value — no full consolidation.</div>
+
+<div class="section-title">IFRS — Investment Entity Exemption (IFRS 10)</div>
+<p>IFRS 10 defines an <strong>investment entity</strong> and provides a similar exemption. To qualify as an investment entity under IFRS 10, the entity must:</p>
+<ul>
+<li>Obtain funds from investors to provide investment management services</li>
+<li>Commit to investors that its business purpose is investing for returns (capital appreciation, investment income, or both)</li>
+<li>Measure and evaluate performance of substantially all its investments on a fair value basis</li>
+</ul>
+<p>PE funds meeting these criteria measure portfolio company investments at FVTPL (Fair Value Through Profit or Loss) rather than consolidating them.</p>
+
+<div class="section-title">Exception to the Exception</div>
+<p>If a subsidiary provides <strong>investment-related services</strong> to the fund (e.g., a management company subsidiary), that subsidiary IS consolidated into the investment entity's financial statements. Portfolio company operating subsidiaries are still measured at FV, not consolidated.</p>
+
+<div class="section-title">Practical Impact for Accountants</div>
+<table class="comp-table">
+<tr><th>With Consolidation</th><th>Without Consolidation (PE)</th></tr>
+<tr><td>Combine all assets/liabilities of all portfolio companies</td><td>Portfolio companies shown as one fair value number</td></tr>
+<tr><td>Eliminate intercompany transactions</td><td>No elimination needed</td></tr>
+<tr><td>Complex goodwill, NCI calculations</td><td>Simple: record investment at FV</td></tr>
+<tr><td>Portfolio company revenue/expenses included in fund P&amp;L</td><td>Only FV changes and dividends/interest flow to fund P&amp;L</td></tr>
+</table>
+</div>
+<div class="content-panel" id="panel-7-1">
+<div class="page-title">Secondaries &amp; Co-Investments</div>
+
+<div class="section-title">Secondary Transactions</div>
+<p>Secondary transactions involve the sale and purchase of existing PE fund interests <em>between investors</em> — rather than buying new portfolio companies directly. This provides liquidity in an otherwise illiquid asset class.</p>
+
+<div class="sub-title">LP-Led Secondaries</div>
+<p>An LP sells their interest in an existing fund to a secondary buyer at a negotiated price (usually a discount to NAV). The fund itself is unchanged; only the LP register changes.</p>
+<div class="formula">Accounting for LP secondary transfer (fund records):
+1. LP A transfers their interest to Secondary Buyer for $18M
+   (LP A's capital account was $20M — sold at 90% of NAV)
+
+2. Fund records:
+DR  Partners' Capital — LP A       $20,000,000  [remove at book value]
+  CR  Partners' Capital — Buyer      $20,000,000  [add new LP at book value]
+
+Note: The fund records the BOOK VALUE transfer.
+The $2M discount (LP A's loss) is between LP A and the buyer — not the fund's transaction.</div>
+
+<div class="sub-title">GP-Led Secondaries (Continuation Funds)</div>
+<p>A newer structure where the GP transfers assets from an aging fund into a new "continuation fund" to extend the hold period on high-performing assets. Existing LPs can cash out or roll into the new vehicle.</p>
+<div class="info-box"><strong>Accounting challenge:</strong> GP-led secondaries involve related-party conflicts (GP on both sides of the transaction). LPAC approval required. Independent fairness opinion needed. NAV at transfer date must be independently validated.</div>
+
+<div class="section-title">Co-Investments</div>
+<p>LPs are often offered the opportunity to invest <strong>directly alongside the fund</strong> in specific portfolio companies. This is called a co-investment. Co-investments typically have:</p>
+<ul>
+<li>No management fees (or reduced, e.g., 0–0.5%)</li>
+<li>No carried interest (or reduced, e.g., 5–10%)</li>
+<li>Direct ownership of a stake in the specific company</li>
+</ul>
+<p>Co-investments are attractive to large LPs (pensions, SWFs) who want to increase their PE exposure at lower cost.</p>
+
+<div class="section-title">Accounting for Co-Investments</div>
+<p>Co-investments are typically structured as separate vehicles (SPVs) parallel to the main fund. Each SPV has its own set of books:</p>
+<div class="formula">Structure: 
+Main Fund → 80% of Company X equity
+Co-Invest SPV → 20% of Company X equity (LP A and LP B directly)
+
+Co-Invest SPV journal entries are identical to main fund but on a smaller scale:
+- Investment purchase at cost
+- Quarterly FV marks
+- Distribution on exit
+- Capital account statements for each co-investor</div>
+
+<div class="section-title">NAV Facility Lending</div>
+<p>A newer financing innovation: lenders extend credit to PE funds secured by the NAV of the entire portfolio (not just LP commitments like sub-lines). Used to fund distributions, GP liquidity, or bridge capital calls. Accounting similar to sub-lines but longer duration and more complex covenants.</div>
+</div>
+<div class="content-panel" id="panel-7-2">
+<div class="page-title">Technology &amp; Automation in PE Accounting</div>
+<p>The PE accounting function is undergoing rapid transformation driven by automation, data analytics, and AI. Understanding these tools is increasingly a competitive advantage — and sometimes a requirement — for PE accountants.</p>
+
+<div class="section-title">Core Accounting Systems</div>
+<table class="comp-table">
+<tr><th>System</th><th>Function</th><th>Common Platforms</th></tr>
+<tr><td>Fund Accounting System</td><td>General ledger, capital accounts, NAV calculation</td><td>Advent Geneva, Investran, eFront, Allvue, Yardi</td></tr>
+<tr><td>Portfolio Monitoring</td><td>Portfolio company data aggregation, KPI tracking</td><td>Cobalt, Dynamo, iLEVEL, Allvue</td></tr>
+<tr><td>Investor Portal</td><td>LP reporting, document distribution</td><td>Intralinks, Broadridge, SS&amp;C, Carta</td></tr>
+<tr><td>Data Warehousing</td><td>Centralized reporting data</td><td>Snowflake, Azure SQL, Databricks</td></tr>
+<tr><td>BI &amp; Analytics</td><td>Dashboards, fund-level analytics, LP reporting</td><td>Power BI, Tableau, Looker</td></tr>
+</table>
+
+<div class="section-title">Power BI in PE Fund Accounting</div>
+<p>Power BI is increasingly used in PE accounting for:</p>
+<ul>
+<li><strong>Fund performance dashboards:</strong> Real-time IRR, DPI, TVPI across multiple funds and vintage years</li>
+<li><strong>Portfolio monitoring:</strong> EBITDA trends, leverage ratios, revenue growth across portfolio companies</li>
+<li><strong>LP reporting:</strong> Automated capital account summaries and distribution waterfall visualizations</li>
+<li><strong>Fee reconciliation:</strong> Tracking management fees, offset calculations, and side letter adjustments</li>
+<li><strong>NAV rollforward:</strong> Automated period-over-period NAV attribution (contributions, FV changes, distributions)</li>
+</ul>
+
+<div class="section-title">Power Automate in PE Accounting</div>
+<p>Power Automate (and similar RPA tools) streamlines repetitive accounting tasks:</p>
+<ul>
+<li>Automated capital call notice generation and distribution to LPs</li>
+<li>Portfolio company data collection (email-to-Excel automation)</li>
+<li>Wire transfer notifications and reconciliation alerts</li>
+<li>Quarterly report distribution to LPs via document management systems</li>
+<li>Approval workflows for journal entries, wire releases, and valuation memos</li>
+</ul>
+
+<div class="section-title">AI and Machine Learning Applications</div>
+<ul>
+<li><strong>Document intelligence:</strong> Extracting financial data from portfolio company reports using OCR and NLP</li>
+<li><strong>Anomaly detection:</strong> Identifying unusual entries in capital accounts or fund expense patterns</li>
+<li><strong>Valuation assistance:</strong> Comparable company analysis automation; draft DCF assumptions from market data</li>
+<li><strong>Audit support:</strong> Automated audit workpaper population from ledger data</li>
+<li><strong>Chatbot LP portals:</strong> AI answering LP queries about their capital account or fund performance</li>
+</ul>
+
+<div class="gold-box"><strong>Future Skill:</strong> The PE accountants who thrive over the next decade will combine deep technical accounting knowledge (waterfall mechanics, ASC 946, fair value) with the ability to automate workflows and build dashboards. Excel and Python skills + Power BI + understanding of fund systems = high-value professional.</div>
+</div>
+<div class="content-panel" id="panel-7-3">
+<div class="page-title">Regulatory Environment for PE Funds</div>
+
+<div class="section-title">US Regulatory Framework</div>
+
+<div class="sub-title">Investment Advisers Act of 1940</div>
+<p>Most PE fund GPs managing more than $150M in assets are <strong>registered investment advisers (RIAs)</strong> with the SEC. SEC registration requires:</p>
+<ul>
+<li>Annual Form ADV filing (disclosure of business, fees, conflicts)</li>
+<li>Written compliance policies and procedures</li>
+<li>Chief Compliance Officer (CCO) designation</li>
+<li>SEC examination readiness</li>
+</ul>
+
+<div class="sub-title">Dodd-Frank Act (2010)</div>
+<p>Removed the "private adviser" exemption that previously allowed PE funds to avoid SEC registration. Required most PE GPs to register as RIAs. Also introduced LP right to know about side letters and fee reporting requirements.</p>
+
+<div class="sub-title">Form PF</div>
+<p>Large private fund advisers (>$2B AUM) file Form PF with the SEC quarterly, providing systemic risk data: fund size, leverage, concentration, liquidity. Accounting teams support Form PF data compilation.</div>
+
+<div class="section-title">European Regulatory Framework</div>
+
+<div class="sub-title">AIFMD — Alternative Investment Fund Managers Directive</div>
+<p>EU regulation requiring European fund managers (and non-EU managers marketing in Europe) to register as Alternative Investment Fund Managers (AIFMs). Requirements include:</p>
+<ul>
+<li>Depositary appointment (independent asset safekeeping oversight)</li>
+<li>Annual AIFMD report to regulators</li>
+<li>Remuneration policies and disclosure</li>
+<li>Leverage limits for certain fund types</li>
+</ul>
+
+<div class="sub-title">ILPA Fee Reporting (US) and AIFMD Annex IV (EU)</div>
+<p>Both require standardized fee and expense disclosure. As accountant, you will compile data for these reports.</p>
+
+<div class="section-title">ASC 740 — Tax Uncertainty</div>
+<p>PE funds must evaluate whether uncertain tax positions meet the "more-likely-than-not" threshold for recognition. Key PE tax uncertainty areas: carried interest treatment under Section 1061, UBTI characterization, and state tax nexus for funds investing across multiple states.</p>
+</div>
+<div class="content-panel" id="panel-8-0">
+<div class="about-card">
+  <div class="about-header">
+    <div class="about-avatar">D</div>
+    <div>
+      <h2>Dan B, CPA</h2>
+      <p>Private Equity Fund Accounting &amp; Reporting Specialist</p>
+    </div>
+  </div>
+  <div class="about-body">
+    <p>With over <strong>10 years of experience</strong> in private equity fund accounting and reporting, I have worked across the full cycle of PE fund operations — from fund formation and first capital call, through active portfolio management and complex quarterly closes, all the way to fund wind-down and final LP distributions.</p>
+    <p>My specialty is the intersection of technical accounting rigor and practical fund operations. I have deep expertise in <strong>complex fee structures</strong> — multi-class LP arrangements, management fee step-downs, offset calculations, and side letter management — as well as the intricacies of <strong>carried interest waterfall calculations</strong> under both European (whole-of-fund) and American (deal-by-deal) models.</p>
+    <p>I am passionate about <strong>transforming how PE accounting teams work</strong>. The manual, spreadsheet-heavy workflows that characterized PE fund administration for decades are being replaced by automated, data-driven processes. I have built and deployed solutions using <strong>Power BI</strong> for real-time fund performance dashboards, <strong>Power Automate</strong> for capital call and distribution workflow automation, and <strong>AI tools</strong> for document processing, valuation support, and LP reporting — significantly reducing close time and improving accuracy.</p>
+    <p>I created <strong>PE Clarity</strong> to give junior PE accountants a structured, practical foundation — the kind of resource I wish had existed when I was starting out. The goal is simple: help you develop confidence in the technical concepts that matter most, so you can focus on adding real value from day one.</p>
+    <div class="skills-grid">
+      <span class="skill-tag">CPA</span>
+      <span class="skill-tag">PE Fund Accounting</span>
+      <span class="skill-tag">Waterfall Calculations</span>
+      <span class="skill-tag">Complex Fee Structures</span>
+      <span class="skill-tag">ASC 946 / IFRS 13</span>
+      <span class="skill-tag">Fair Value Measurement</span>
+      <span class="skill-tag">LP Reporting (ILPA)</span>
+      <span class="skill-tag">Power BI</span>
+      <span class="skill-tag">Power Automate</span>
+      <span class="skill-tag">AI Automation</span>
+      <span class="skill-tag">FP&amp;A</span>
+      <span class="skill-tag">Fund Administration</span>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div id="rsidebar"><div id="rs-content"></div></div>
+</div>
+
+<script>
+const modules = [{name:'PE Fundamentals',topics:[{id:"panel-0-0",name:'What Is Private Equity?'},{id:"panel-0-1",name:'Key Participants'},{id:"panel-0-2",name:'The Limited Partnership Agreement'},{id:"panel-0-3",name:'Fund Formation & Legal Structures'}]},
+{name:'Fund Accounting Core',topics:[{id:"panel-1-0",name:'Accounting Standards (ASC 946 / IFRS)'},{id:"panel-1-1",name:'PE Fund Financial Statements'},{id:"panel-1-2",name:'NAV & Capital Accounts'},{id:"panel-1-3",name:'Common Journal Entries'}]},
+{name:'Fair Value & Valuation',topics:[{id:"panel-2-0",name:'Fair Value Framework (ASC 820)'},{id:"panel-2-1",name:'Valuation Methods'},{id:"panel-2-2",name:'Valuation Governance & Process'}]},
+{name:'Waterfall & Carry',topics:[{id:"panel-3-0",name:'Carried Interest Basics'},{id:"panel-3-1",name:'European Waterfall (Whole-of-Fund)'},{id:"panel-3-2",name:'American Waterfall (Deal-by-Deal)'},{id:"panel-3-3",name:'Accounting for Carried Interest'},{id:"panel-3-4",name:'Clawback Provisions'}]},
+{name:'Performance Metrics',topics:[{id:"panel-4-0",name:'IRR and MOIC'},{id:"panel-4-1",name:'DPI, RVPI, and TVPI'},{id:"panel-4-2",name:'Performance Reporting & Benchmarks'}]},
+{name:'Investor Reporting',topics:[{id:"panel-5-0",name:'ILPA Reporting Standards'},{id:"panel-5-1",name:'Capital Account Statements'},{id:"panel-5-2",name:'Capital Calls & Distributions'},{id:"panel-5-3",name:'K-1 and Tax Reporting'}]},
+{name:'Allocations & Processes',topics:[{id:"panel-6-0",name:'Income & Loss Allocation Methods'},{id:"panel-6-1",name:'Management Fee Calculations'},{id:"panel-6-2",name:'Capital Call Mechanics & Recycling'}]},
+{name:'Advanced & Specialty',topics:[{id:"panel-7-0",name:'Consolidation & Investment Entity Exemption'},{id:"panel-7-1",name:'Secondaries & Co-Investments'},{id:"panel-7-2",name:'Technology & Automation in PE Accounting'},{id:"panel-7-3",name:'Regulatory Environment'}]},
+{name:'About',topics:[{id:"panel-8-0",name:'About the Creator'}]}];
+const rsidebars = [`
+  <div class="rs-section">
+    <h4>Key Terms</h4>
+    <div class="rs-term"><strong>GP (General Partner)</strong><span>Fund manager; makes investment decisions; unlimited liability</span></div>
+    <div class="rs-term"><strong>LP (Limited Partner)</strong><span>Fund investor; passive; limited to committed capital</span></div>
+    <div class="rs-term"><strong>LPA</strong><span>Limited Partnership Agreement — the governing legal contract</span></div>
+    <div class="rs-term"><strong>Management Fee</strong><span>Annual fee (≈2% of committed capital) paid to GP for managing the fund</span></div>
+    <div class="rs-term"><strong>Carry</strong><span>GP's profit share (≈20%) after LPs receive their hurdle return</span></div>
+    <div class="rs-term"><strong>Vintage Year</strong><span>Year the fund made its first capital call — used for benchmarking</span></div>
+    <div class="rs-term"><strong>J-Curve</strong><span>Typical early negative / later positive IRR pattern of PE fund returns</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Quick Facts</h4>
+    <div class="rs-term"><strong>Standard Fund Term</strong><span>10 years (+ 1–2 year extensions)</span></div>
+    <div class="rs-term"><strong>Investment Period</strong><span>First 5 years; capital deployed</span></div>
+    <div class="rs-term"><strong>Typical Hurdle Rate</strong><span>8% per annum, compounded</span></div>
+    <div class="rs-term"><strong>GP Co-Invest</strong><span>1–5% of fund; aligns incentives</span></div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>Key Standards</h4>
+    <div class="rs-term"><strong>ASC 946</strong><span>US GAAP standard for investment companies — mandates FV accounting</span></div>
+    <div class="rs-term"><strong>ASC 820</strong><span>Fair value measurement — defines FV and input hierarchy</span></div>
+    <div class="rs-term"><strong>IAS 28</strong><span>IFRS — associates; FVTPL election available for PE funds</span></div>
+    <div class="rs-term"><strong>IFRS 10</strong><span>Investment entity exemption — no consolidation of portfolio cos</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Key Formulas</h4>
+    <div class="rs-formula">NAV = Total Assets (FV) − Total Liabilities</div>
+    <div class="rs-formula">Capital Account:
+Contributions
++ Net Income Allocated
+− Expenses Allocated
+− Distributions
+= Ending Balance</div>
+    <div class="rs-formula">Net Income =
+Realized Gains
++ Unrealized Chg
++ Investment Income
+− Fund Expenses</div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>FV Hierarchy</h4>
+    <div class="rs-term"><strong>Level 1</strong><span>Quoted prices in active markets (rare in PE)</span></div>
+    <div class="rs-term"><strong>Level 2</strong><span>Observable inputs, not Level 1 (market-corroborated)</span></div>
+    <div class="rs-term"><strong>Level 3</strong><span>Unobservable inputs — own assumptions (most PE investments)</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Valuation Methods</h4>
+    <div class="rs-term"><strong>EV/EBITDA Multiple</strong><span>Most common for buyout; apply sector multiple to EBITDA</span></div>
+    <div class="rs-term"><strong>DCF</strong><span>PV of future cash flows; sensitive to WACC and growth rate</span></div>
+    <div class="rs-term"><strong>Recent Transaction</strong><span>Cost = FV if recent and no significant events</span></div>
+    <div class="rs-term"><strong>NAV / Asset</strong><span>Used for holding companies and asset-heavy businesses</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Key Formula</h4>
+    <div class="rs-formula">EV = EBITDA × Multiple
+Equity = EV − Net Debt
+Net Debt = Debt − Cash</div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>Waterfall Tiers</h4>
+    <div class="rs-term"><strong>Tier 1</strong><span>Return all LP contributed capital (100% to LPs)</span></div>
+    <div class="rs-term"><strong>Tier 2</strong><span>Preferred return (8% p.a.) on all contributed capital</span></div>
+    <div class="rs-term"><strong>Tier 3</strong><span>GP catch-up (100% to GP until GP = 20% of total profits)</span></div>
+    <div class="rs-term"><strong>Tier 4</strong><span>Residual split: 80% LP / 20% GP (carried interest)</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>European vs American</h4>
+    <div class="rs-term"><strong>European</strong><span>Whole-of-fund basis. ALL capital returned before carry. ILPA preferred.</span></div>
+    <div class="rs-term"><strong>American</strong><span>Deal-by-deal. Early carry possible. Clawback risk higher.</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Key Formula</h4>
+    <div class="rs-formula">Preferred Return:
+FV = PV × (1 + r)^n
+r = 8% / year
+n = years held
+
+GP Catch-Up:
+GP% = 20% of total profits
+LP% = 80% of total profits</div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>Performance Metrics</h4>
+    <div class="rs-term"><strong>IRR</strong><span>Time-weighted annualized return; accounts for cash flow timing</span></div>
+    <div class="rs-term"><strong>XIRR</strong><span>IRR for irregular cash flows — always use for PE</span></div>
+    <div class="rs-term"><strong>MOIC / TVPI</strong><span>(Distributions + NAV) ÷ Paid-In Capital</span></div>
+    <div class="rs-term"><strong>DPI</strong><span>Distributions ÷ Paid-In (realized returns only)</span></div>
+    <div class="rs-term"><strong>RVPI</strong><span>NAV ÷ Paid-In (unrealized value remaining)</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Key Formulas</h4>
+    <div class="rs-formula">TVPI = DPI + RVPI
+     = (Dist + NAV) / PIC
+
+DPI = Distributions / PIC
+RVPI = Remaining NAV / PIC</div>
+    <div class="rs-formula">Target Returns:
+Top Quartile: IRR > 20%
+Median: IRR ~15%
+Hurdle: IRR = 8%</div>
+  </div>
+  <div class="rs-section">
+    <h4>Benchmarks</h4>
+    <div class="rs-term"><strong>PME > 1.0</strong><span>PE outperformed equivalent public market investment</span></div>
+    <div class="rs-term"><strong>Vintage Year</strong><span>Compare to peers raising in same year</span></div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>ILPA Templates</h4>
+    <div class="rs-term"><strong>Capital Account Stmt</strong><span>LP-specific NAV, contributions, distributions, performance</span></div>
+    <div class="rs-term"><strong>Fee Reporting</strong><span>All fees: mgmt fee, deal fees, carry, offsets</span></div>
+    <div class="rs-term"><strong>Portfolio Metrics</strong><span>Revenue, EBITDA, leverage per portfolio company</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Tax Terms</h4>
+    <div class="rs-term"><strong>Form 1065</strong><span>Partnership tax return (fund files annually)</span></div>
+    <div class="rs-term"><strong>K-1</strong><span>Each LP's share of income, gains, losses, deductions</span></div>
+    <div class="rs-term"><strong>UBTI</strong><span>Unrelated Business Taxable Income — risk for tax-exempt LPs</span></div>
+    <div class="rs-term"><strong>ECI</strong><span>Effectively Connected Income — risk for non-US LPs</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Reporting Cadence</h4>
+    <div class="rs-term"><strong>Quarterly</strong><span>Capital accounts, fund NAV, portfolio summary</span></div>
+    <div class="rs-term"><strong>Annual</strong><span>Audited financials, K-1s, full fee disclosure</span></div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>Allocation Methods</h4>
+    <div class="rs-term"><strong>Target Capital</strong><span>Liquidation waterfall at current FV drives allocation — most accurate</span></div>
+    <div class="rs-term"><strong>Pro-Rata</strong><span>Simple % of commitment; works for simple structures only</span></div>
+    <div class="rs-term"><strong>Layered</strong><span>Class-specific items first, then common pool pro-rata</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Fee Formulas</h4>
+    <div class="rs-formula">Mgmt Fee (Investment Period):
+= Rate × Committed Capital
+
+Mgmt Fee (Harvest Period):
+= Rate × Net Invested Cost
+
+Net Fee = Gross Fee − Offset
+Offset = Deal Fees × Offset%</div>
+  </div>
+  <div class="rs-section">
+    <h4>Sub-Line Note</h4>
+    <div class="rs-term"><strong>Subscription Line</strong><span>Short-term credit; delays LP calls; inflates IRR 3–5%; require unlevered IRR disclosure</span></div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>Key Standards</h4>
+    <div class="rs-term"><strong>ASC 810</strong><span>Consolidation — PE funds generally EXEMPT via Inv. Co. exception</span></div>
+    <div class="rs-term"><strong>IFRS 10</strong><span>Investment entity exemption from consolidation</span></div>
+    <div class="rs-term"><strong>AIFMD</strong><span>EU regulation for alternative fund managers</span></div>
+    <div class="rs-term"><strong>Form PF</strong><span>SEC systemic risk reporting for large PE managers</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Tech Stack (PE)</h4>
+    <div class="rs-term"><strong>Advent Geneva</strong><span>Leading PE fund accounting system</span></div>
+    <div class="rs-term"><strong>eFront / Allvue</strong><span>PE-specific fund accounting platforms</span></div>
+    <div class="rs-term"><strong>Power BI</strong><span>Dashboards, reporting automation</span></div>
+    <div class="rs-term"><strong>Power Automate</strong><span>Workflow automation; RPA</span></div>
+  </div>
+  `,
+`
+  <div class="rs-section">
+    <h4>About PE Clarity</h4>
+    <div class="rs-term"><strong>Mission</strong><span>Practical, jargon-free PE accounting education for junior professionals</span></div>
+    <div class="rs-term"><strong>Coverage</strong><span>8 modules covering the full PE accounting lifecycle</span></div>
+    <div class="rs-term"><strong>Approach</strong><span>Real examples, worked calculations, and exam-ready definitions</span></div>
+  </div>
+  <div class="rs-section">
+    <h4>Specializations</h4>
+    <div class="rs-term"><strong>Full Cycle Accounting</strong><span>From fund formation to wind-down</span></div>
+    <div class="rs-term"><strong>Waterfall &amp; Carry</strong><span>European and American models, clawback</span></div>
+    <div class="rs-term"><strong>Finance Automation</strong><span>Power BI, Power Automate, AI tools</span></div>
+  </div>
+  `];
+
+let currentModule = 0;
+let currentTopic = 0;
+
+function switchModule(idx) {
+  currentModule = idx;
+  currentTopic = 0;
+  // Update tab styles
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  renderSidebar();
+  showPanel(idx, 0);
+  updateRSidebar(idx);
+  // Scroll left sidebar to top
+  document.getElementById('lsidebar').scrollTop = 0;
+}
+
+function renderSidebar() {
+  const mod = modules[currentModule];
+  const heading = document.getElementById('ls-heading');
+  heading.textContent = mod.name;
+  const container = document.getElementById('ls-items');
+  container.innerHTML = '';
+  mod.topics.forEach((topic, i) => {
+    const div = document.createElement('div');
+    div.className = 'topic-item' + (i === currentTopic ? ' active' : '');
+    div.textContent = topic.name;
+    div.onclick = () => selectTopic(i);
+    container.appendChild(div);
+  });
+}
+
+function selectTopic(idx) {
+  currentTopic = idx;
+  document.querySelectorAll('.topic-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  showPanel(currentModule, idx);
+  document.getElementById('main').scrollTop = 0;
+}
+
+function showPanel(modIdx, topicIdx) {
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(`panel-${modIdx}-${topicIdx}`);
+  if (panel) panel.classList.add('active');
+}
+
+function updateRSidebar(idx) {
+  document.getElementById('rs-content').innerHTML = rsidebars[idx] || '';
+}
+
+// Initialize
+switchModule(0);
+</script>
+</body>
+</html>
